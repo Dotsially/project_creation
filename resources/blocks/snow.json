@@ -1,0 +1,10 @@
+{
+    "block_name": "snow",
+    "block_model": "cube",
+    "uv_top": [6,8],
+    "uv_bottom": [1,13],
+    "uv_left": [3,12],
+    "uv_right": [3,12],
+    "uv_front": [3,12],
+    "uv_back": [3,12]
+}

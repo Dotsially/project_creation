@@ -1,0 +1,6 @@
+{
+    "name" : "bottom_slab",
+    "type" : "cuboid",
+    "from": [0,0,0],
+    "to": [16,8,16]
+}

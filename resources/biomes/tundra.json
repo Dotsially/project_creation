@@ -1,0 +1,7 @@
+{
+    "biome_name" : "tundra",
+    "biome_type" : "overworld",
+    "biome_height": 8,
+    "biome_elevation": 3,
+    "biome_layers" : ["snow", "dirt", "stone"]
+}

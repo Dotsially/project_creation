@@ -1,0 +1,7 @@
+/.vs
+/.vscode
+/bin/*
+/resources/textures
+build_run_web.bat
+/index.data
+

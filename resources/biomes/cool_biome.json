@@ -1,0 +1,7 @@
+{
+    "biome_name" : "cool_biome",
+    "biome_type" : "overworld",
+    "biome_height": 8,
+    "biome_elevation": 2,
+    "biome_layers" : ["wood", "leaves", "sand"]
+}

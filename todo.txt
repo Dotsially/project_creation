@@ -1,0 +1,26 @@
+Todo:
+[] Create a compression algorithm to send chunk data faster
+[] Create custom network protocol to send data
+[] Create a client that receives and sends data to the server
+[] Create a server application that receives data from multiple clients
+    Sends chunk world data
+    Updates blocks
+    Updates player positions
+    Updates enemies
+[] Refactor chunk mesh generation to allow blocks with different growth stages, slabs,
+    stairs, etc.
+[] Add ability for chunk to render models
+[] Make entity data driven with json    
+[] Create a model importer (filetype tbd.) for character models and blocks
+[] Raycaster visibility
+
+
+
+
+Task for today:
+[] Create a json block model importer. 
+
+Done:
+[X] Create a block data class for the chunk so that different growth stages 
+    and directional blocks work and visibility of said block.
+[X] Create a file reader that reads and translates json files of block data to a block class

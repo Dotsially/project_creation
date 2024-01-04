@@ -1,0 +1,10 @@
+{
+    "block_name": "wood",
+    "block_model" : "bottom_slab",
+    "uv_top": [5,15],
+    "uv_bottom": [5,15],
+    "uv_left": [4,15],
+    "uv_right": [4,15],
+    "uv_front": [4,15],
+    "uv_back": [4,15]
+}

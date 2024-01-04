@@ -1,0 +1,10 @@
+{
+    "block_name": "leaves",
+    "block_model": "cube",
+    "uv_top": [3,15],
+    "uv_bottom": [3,15],
+    "uv_left": [3,15],
+    "uv_right": [3,15],
+    "uv_front": [3,15],
+    "uv_back": [3,15]
+}
