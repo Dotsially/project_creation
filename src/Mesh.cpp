@@ -43,10 +43,12 @@ void Mesh::SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesDa
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 }
 
-void Mesh::DrawChunk(i32 indicesSize, glm::vec3 position){
+void Mesh::DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPosition, glm::vec3 fogColor){
     glm::mat4 transform = glm::translate(glm::mat4(1), position);
     glBindVertexArray(vao);
     glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
+    glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
+    glUniform3fv(4, 1, glm::value_ptr(fogColor));
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 }
 

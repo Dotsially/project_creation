@@ -62,6 +62,38 @@ BiomeData SekaiReader::ReadBiomeFile(std::string path){
         biome.biomeLayers[i] = jsonData["biome_layers"][i];
     }
 
+    if(jsonData.contains("biome_fog")){
+        for(auto it = jsonData["biome_fog"].begin(); 
+            it != jsonData["biome_fog"].end(); ++it){   
+            BiomeFogData biomeFogData; 
+            for(int i = 0; i < 3; i++){
+                biomeFogData.fogColor[i] = it.value()["fog_color"][i];
+                biomeFogData.skyColor[i] = it.value()["sky_color"][i];
+            }
+            biome.colors.operator[](it.key()) = biomeFogData;   
+        }
+    }
+
+    if(jsonData.contains("biome_noise")){
+        for(auto it : jsonData["biome_noise"]){
+            BiomeNoiseData noiseData;
+            noiseData.frequency = it["frequency"];
+            noiseData.octaves = it["octaves"];
+            noiseData.lacuranity = it["lacunarity"];
+            noiseData.gain = it["gain"];
+            noiseData.weightedStrength = it["weighted_strength"];
+            noiseData.noiseType = it["noise_type"];
+            noiseData.fractalType = it["noise_fractal_type"];
+            noiseData.cellularReturnType = it["noise_cellular_return_type"];
+            if(it.contains("divisor")){
+                if(it["divisor"] > 0){
+                    noiseData.divisor = it["divisor"];
+                }
+            }
+            biome.biomeNoise.push_back(noiseData);
+        }
+    }
+
     fileStream.close();
     return biome;
 }
@@ -128,4 +160,14 @@ void SekaiReader::ReadBlockModels(std::map<std::string, BlockModelData>* blockMo
         BlockModelData model = ReadBlockModelFile("resources/block_models/" + file);
         blockModels->operator[](model.modelName) = model;
     }
+}
+
+void SekaiReader::ReadWorld(WorldData* worldData){
+    std::fstream fileStream("resources/world.json");
+    json jsonData = json::parse(fileStream);
+
+    worldData->regionSize = jsonData["region_size"];
+    worldData->biome = jsonData["biome"];
+
+    fileStream.close();
 }

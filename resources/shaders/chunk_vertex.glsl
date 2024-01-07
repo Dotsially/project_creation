@@ -19,7 +19,7 @@ const float multiplier[3] = float[3](
     1.0, 0.8, 0.5
 );
 
-
+out vec3 world_pos;
 out vec2 uv; 
 out vec2 voxel_id;
 out float shading;
@@ -40,4 +40,5 @@ void main(){
 
 
     gl_Position = projection * view * transform * vec4(pos.x - 0.5, pos.y -0.5, pos.z - 0.5, 1.0);
+    world_pos = (transform * vec4(pos-0.5, 1.0)).xyz;
 }

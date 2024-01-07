@@ -1,0 +1,10 @@
+{
+    "block_name": "crystal",
+    "block_model": "cube",
+    "uv_top": [0,15],
+    "uv_bottom": [0,15],
+    "uv_left": [0,15],
+    "uv_right": [0,15],
+    "uv_front": [0,15],
+    "uv_back": [0,15]
+}

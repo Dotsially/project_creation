@@ -51,7 +51,6 @@ int main(int argc, char* args[]){
     Window gameWindow = Window(SCREEN_WIDTH, SCREEN_HEIGHT, "World");
     
     //opengl stuff
-    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -70,16 +69,11 @@ int main(int argc, char* args[]){
     World world(blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
 
     //don't remove this code or the world will break :)    
-    fnl_state noise = fnlCreateState();
-    noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.frequency = 0.01f;    
-    noise.lacunarity = 2.0f;
-    noise.gain = 0.5f;
+    std::vector<fnl_state> noiseVec; 
 
-    
     Chunk c; 
     Chunk* n[4];
-    c.CreateChunkData(blockManager.GetBlocks(), blockModel.GetBlockModels(), biome.GetBiome("desert"), &noise, 0,0);
+    c.CreateChunkData(blockManager.GetBlocks(), blockModel.GetBlockModels(), biome.GetBiome("desert"), noiseVec, 0,0);
     c.CreateChunkMesh(n);
     //
 
@@ -130,12 +124,15 @@ int main(int argc, char* args[]){
             view = camera.GetViewMatrix();
         //}   
 
+        glm::vec3 skyColor = world.GetSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         texture.ActivateTexture();
         shader.UseProgram();
         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-        world.Draw(camera.GetPosition());
+        world.Draw(player.GetPosition(), camera.GetPosition());
         //keep this here otherwise chunk generation crashes :)
         //chunk.Draw();
         

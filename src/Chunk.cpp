@@ -9,14 +9,25 @@ Chunk::~Chunk(){
 }
 
 
-void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, fnl_state* noise, i32 x, i32 z){
+void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z){
     this->blocks = blocks;
     this->blockModels = blockModels;
     position = glm::vec2(x,z);
-
+    
     for(i32 x = 0; x < CHUNK_SIZE; x++){
         for(i32 z = 0; z < CHUNK_SIZE; z++){
-            i32 value = (fnlGetNoise2D(noise, x + (position.x*CHUNK_SIZE), z + (position.y*CHUNK_SIZE))+1)*biome.height+biome.elevation;
+            i32 value = biome.elevation + biome.height;
+            if(noise.size() > 0){
+                value = 0;
+                for(int i = 0; i < noise.size(); i++){
+                    i32 noiseValue = (fnlGetNoise2D(&noise[i], x + (position.x*CHUNK_SIZE), z + (position.y*CHUNK_SIZE))+1)*biome.height+biome.elevation;   
+                    if(biome.biomeNoise[i].divisor > 0){
+                        noiseValue = noiseValue/biome.biomeNoise[i].divisor;
+                    }
+                    value += noiseValue;
+                }   
+            }
+
             for(i32 y = 0; y < CHUNK_HEIGHT; y++){  
                 if(y == value){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[0],0,0,0};
@@ -153,8 +164,8 @@ void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z){
     }
 }
 
-void Chunk::Draw(){
-    chunkMesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE+0.5, 0.5, position.y*CHUNK_SIZE+0.5));
+void Chunk::Draw(glm::vec3 cameraPosition, glm::vec3 fogColor){
+    chunkMesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE+0.5, 0.5, position.y*CHUNK_SIZE+0.5), cameraPosition, fogColor);
 }
 
 

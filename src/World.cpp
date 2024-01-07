@@ -2,18 +2,31 @@
 #include <iostream>
 
 World::World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
+    sekaiReader.ReadWorld(&worldData);
+    REGION_SIZE = worldData.regionSize;
+    
     chunks = new Chunk[REGION_SIZE*REGION_SIZE];
+    biome = biomes.GetBiome(worldData.biome);
+    
+    
+    std::vector<fnl_state> biomeNoise;
 
-    biome = biomes.GetBiome("plain_hills");
-    fnl_state noise = fnlCreateState();
-    noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.frequency = 0.01f;
-    noise.lacunarity = 2.0f;
-    noise.gain = 0.5f;
+    for(int i = 0; i < biome.biomeNoise.size(); i++){
+        fnl_state noise = fnlCreateState();
+        noise.noise_type = fnl_noise_type(biome.biomeNoise[i].noiseType);
+        noise.fractal_type = fnl_fractal_type(biome.biomeNoise[i].fractalType);
+        noise.cellular_return_type = fnl_cellular_return_type(biome.biomeNoise[i].cellularReturnType);
+        noise.frequency = biome.biomeNoise[i].frequency;
+        noise.octaves = biome.biomeNoise[i].octaves;
+        noise.lacunarity = biome.biomeNoise[i].lacuranity;
+        noise.gain = biome.biomeNoise[i].gain;
+        noise.weighted_strength = biome.biomeNoise[i].weightedStrength;
+        biomeNoise.push_back(noise);
+    }
 
     for(i32 x = 0; x < REGION_SIZE; x++){
         for(i32 z = 0; z < REGION_SIZE; z++){
-            chunks[z+x*REGION_SIZE].CreateChunkData(blocks, blockModels, biome, &noise, x,z);
+            chunks[z+x*REGION_SIZE].CreateChunkData(blocks, blockModels, biome, biomeNoise, x,z);
         }
     }
 
@@ -30,7 +43,11 @@ World::~World(){
     delete(chunks);
 }
 
-void World::Draw(glm::vec3 playerPos){
+void World::Draw(glm::vec3 playerPos, glm::vec3 cameraPosition){
+    
+    glm::vec3 fogColor = glm::vec3{biome.colors["clear"].fogColor[0], 
+        biome.colors["clear"].fogColor[1],
+        biome.colors["clear"].fogColor[2]};
     i32 renderDistance = 4;
     glm::ivec2 playerChunkPos = glm::vec2(playerPos.x/32, playerPos.z/32);
     for(i32 x = 0; x < REGION_SIZE; x++){
@@ -40,7 +57,7 @@ void World::Draw(glm::vec3 playerPos){
                 && playerChunkPos.x-chunkPos.x >= -renderDistance 
                 && playerChunkPos.y-chunkPos.y <= renderDistance 
                 && playerChunkPos.y-chunkPos.y >= -renderDistance){
-                chunks[z+x*REGION_SIZE].Draw();
+                chunks[z+x*REGION_SIZE].Draw(cameraPosition, fogColor);
             }
         }
     }
@@ -139,4 +156,12 @@ i32 World::GetTerrainHeight(i32 x, i32 z){
     glm::ivec2 chunkCoordinate(x/32, z/32);
     return chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
         .GetCoordinateTerrainHeight(x%32,z%32);
+}
+
+glm::vec3 World::GetSkyColor(){
+    glm::vec3 skyColor = glm::vec3{biome.colors["clear"].skyColor[0],
+        biome.colors["clear"].skyColor[1],
+        biome.colors["clear"].skyColor[2]}; 
+    
+    return skyColor;
 }

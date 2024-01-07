@@ -1,7 +1,23 @@
 {
     "biome_name" : "cool_biome",
     "biome_type" : "overworld",
-    "biome_height": 8,
+    "biome_height": 50,
     "biome_elevation": 2,
-    "biome_layers" : ["wood", "leaves", "sand"]
+    "biome_layers" : ["leaves", "dirt", "crystal"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.922, 0.8, 0.922],
+            "sky_color" : [1.0, 0.8, 0.922]
+        }
+    },
+    "biome_noise" : [{
+        "frequency": 0.2,
+        "octaves" : 2.0,
+        "lacunarity": 1.5,
+        "gain" : 0.0,
+        "weighted_strength" : 0.0,
+        "noise_type" : 2,
+        "noise_fractal_type" : 0,
+        "noise_cellular_return_type": 0
+    }]
 }

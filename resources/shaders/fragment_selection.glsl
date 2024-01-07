@@ -13,6 +13,8 @@ in vec2 uv;
 
 
 void main(){
-    fragColor = texture(tex, uv);
+    vec4 final_color = texture(tex, uv);
+    if(final_color.a < 0.1) discard;
+    fragColor = final_color;
 
 }

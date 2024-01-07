@@ -13,12 +13,12 @@ Todo:
 [] Make entity data driven with json    
 [] Create a model importer (filetype tbd.) for character models and blocks
 [] Raycaster visibility
-
+[] Create a json block model importer. 
 
 
 
 Task for today:
-[] Create a json block model importer. 
+[] 
 
 Done:
 [X] Create a block data class for the chunk so that different growth stages 

@@ -18,7 +18,7 @@ public:
 
     void InitializeChunkMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
     void SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void DrawChunk(i32 indicesSize, glm::vec3 position);
+    void DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPosition, glm::vec3 fogColor);
 
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
     void DrawMesh(i32 indicesSize, glm::mat4 transform);

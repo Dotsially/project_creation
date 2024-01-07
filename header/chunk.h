@@ -10,7 +10,7 @@
 #include "biome_data.h"
 
 #define CHUNK_SIZE 32
-#define CHUNK_HEIGHT 64
+#define CHUNK_HEIGHT 128
 
 class Chunk{
     glm::vec2 position;
@@ -29,10 +29,10 @@ class Chunk{
 public:
     Chunk();
     ~Chunk();
-    void CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, fnl_state* noise, i32 x, i32 z); 
+    void CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z); 
     void CreateChunkMesh(Chunk** chunks);
     void SendMeshData();
-    void Draw();
+    void Draw(glm::vec3 cameraPosition, glm::vec3 fogColor);
     void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, BlockInstanceData block);
     void RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z);
     u32 GetChunkMeshSize();

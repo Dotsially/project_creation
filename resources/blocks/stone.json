@@ -1,6 +1,6 @@
 {
     "block_name": "stone",
-    "block_model": "upper_slab",
+    "block_model": "cube",
     "uv_top": [0,14],
     "uv_bottom": [0,14],
     "uv_left": [0,14],
