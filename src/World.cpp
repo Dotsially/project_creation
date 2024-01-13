@@ -4,8 +4,11 @@
 World::World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
     sekaiReader.ReadWorld(&worldData);
     REGION_SIZE = worldData.regionSize;
-    
+    renderDistance = worldData.renderDistance;
+
+    chunkPool.InitializeChunkPool(renderDistance);
     chunks = new Chunk[REGION_SIZE*REGION_SIZE];
+
     biome = biomes.GetBiome(worldData.biome);
     
     
@@ -24,34 +27,53 @@ World::World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelDa
         biomeNoise.push_back(noise);
     }
 
-    for(i32 x = 0; x < REGION_SIZE; x++){
-        for(i32 z = 0; z < REGION_SIZE; z++){
+    for(u32 x = 0; x < REGION_SIZE; x++){
+        for(u32 z = 0; z < REGION_SIZE; z++){
             chunks[z+x*REGION_SIZE].CreateChunkData(blocks, blockModels, biome, biomeNoise, x,z);
-        }
-    }
-
-    Chunk* neighbors[4];
-    for(i32 x = 0; x < REGION_SIZE; x++){
-        for(i32 z = 0; z < REGION_SIZE; z++){
-            GetNeighbors(neighbors,x,z);
-            chunks[z+x*REGION_SIZE].CreateChunkMesh(neighbors);
         }
     }
 }
 
 World::~World(){
+    chunkPool.DeleteChunkPool();
     delete(chunks);
 }
 
-void World::Draw(glm::vec3 playerPos, glm::vec3 cameraPosition){
-    
+void World::Update(glm::vec3 playerPosition){
+    Chunk* neighbors[4];
+    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/32, playerPosition.z/32);
+    for(u32 x = 0; x < REGION_SIZE; x++){
+        for(u32 z = 0; z < REGION_SIZE; z++){
+            glm::ivec2 chunkPos = chunks[z+x*REGION_SIZE].GetPosition();
+            if(playerChunkPos.x-chunkPos.x <= renderDistance 
+                && playerChunkPos.x-chunkPos.x >= -renderDistance 
+                && playerChunkPos.y-chunkPos.y <= renderDistance 
+                && playerChunkPos.y-chunkPos.y >= -renderDistance){
+                    if(!chunks[z+x*REGION_SIZE].hasChunkMesh){
+                        chunks[z + x * REGION_SIZE].RequestAvailableChunkMesh(chunkPool.GetAvailableChunkMesh());
+                        
+                        if(chunks[z+x*REGION_SIZE].hasChunkMesh){
+                            GetNeighbors(neighbors,x,z);
+                            chunks[z + x * REGION_SIZE].CreateChunkMesh(neighbors);
+                        }
+                    }
+            }
+            else{
+                chunkPool.FreeInUseMesh(chunks[z+x*REGION_SIZE].GetChunkMesh());
+                chunks[z+x*REGION_SIZE].DisposeChunkMesh();
+            }
+        }
+    }
+}
+
+void World::Draw(glm::vec3 playerPosition, glm::vec3 cameraPosition){
     glm::vec3 fogColor = glm::vec3{biome.colors["clear"].fogColor[0], 
         biome.colors["clear"].fogColor[1],
         biome.colors["clear"].fogColor[2]};
-    i32 renderDistance = 4;
-    glm::ivec2 playerChunkPos = glm::vec2(playerPos.x/32, playerPos.z/32);
-    for(i32 x = 0; x < REGION_SIZE; x++){
-        for(i32 z = 0; z < REGION_SIZE; z++){
+
+    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/32, playerPosition.z/32);
+    for(u32 x = 0; x < REGION_SIZE; x++){
+        for(u32 z = 0; z < REGION_SIZE; z++){
             glm::ivec2 chunkPos = chunks[z+x*REGION_SIZE].GetPosition();
             if(playerChunkPos.x-chunkPos.x <= renderDistance 
                 && playerChunkPos.x-chunkPos.x >= -renderDistance 

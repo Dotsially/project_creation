@@ -8,6 +8,7 @@
 #include "mesh.h"
 #include "block_data.h"
 #include "biome_data.h"
+#include "chunk_pool.h"
 
 #define CHUNK_SIZE 32
 #define CHUNK_HEIGHT 128
@@ -15,13 +16,9 @@
 class Chunk{
     glm::vec2 position;
     BlockInstanceData chunkData[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
-    std::vector<f32> chunkMeshVertices;
-    std::vector<u32> chunkMeshIndices;
     std::map<u8, BlockData>* blocks;
     std::map<std::string, BlockModelData>* blockModels;
-    u32 indicesCount;
-    Mesh chunkMesh;
-    bool firstMesh = true;
+    ChunkMesh* chunkMesh = nullptr;
     Chunk* chunkNeighbors[4];
 
     void AddFace(u32 faceIndex, glm::vec3 position);
@@ -35,12 +32,17 @@ public:
     void Draw(glm::vec3 cameraPosition, glm::vec3 fogColor);
     void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, BlockInstanceData block);
     void RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z);
+    void RequestAvailableChunkMesh(ChunkMesh* chunkMesh);
+    void DisposeChunkMesh();
     u32 GetChunkMeshSize();
     u32 GetChunkIndicesSize();
     f32* GetChunkMeshData();
     u32* GetChunkIndicesData();
+    ChunkMesh* GetChunkMesh();
     bool ConstainsBlock(i32 x, i32 y, i32 z);
     bool IsWithinChunk(i32 x, i32 y, i32 z);
     glm::vec2 GetPosition();
     i32 GetCoordinateTerrainHeight(i32 x, i32 z);
+    
+    u8 hasChunkMesh = 0;
 };

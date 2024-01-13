@@ -168,6 +168,7 @@ void SekaiReader::ReadWorld(WorldData* worldData){
 
     worldData->regionSize = jsonData["region_size"];
     worldData->biome = jsonData["biome"];
+    worldData->renderDistance = jsonData["render_distance"];
 
     fileStream.close();
 }

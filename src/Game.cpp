@@ -74,7 +74,7 @@ int main(int argc, char* args[]){
     Chunk c; 
     Chunk* n[4];
     c.CreateChunkData(blockManager.GetBlocks(), blockModel.GetBlockModels(), biome.GetBiome("desert"), noiseVec, 0,0);
-    c.CreateChunkMesh(n);
+    //c.CreateChunkMesh(n);
     //
 
 
@@ -118,6 +118,7 @@ int main(int argc, char* args[]){
             camera.Update(keystate, player.GetPosition());
             blockHandler.Update(&camera, &world, keystate);
             player.Update(&camera, &world);
+            world.Update(player.GetPosition());
             transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
             transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
             //entityMesh.Update(glm::vec3(0));
