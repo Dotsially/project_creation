@@ -66,7 +66,7 @@ int main(int argc, char* args[]){
     Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
     Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
     Shader shaderEntity = Shader("entity_vertex.glsl", "entity_fragment.glsl");
-    World world(blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
+    World world(&camera, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
 
     //don't remove this code or the world will break :)    
     std::vector<fnl_state> noiseVec; 
@@ -118,7 +118,7 @@ int main(int argc, char* args[]){
             camera.Update(keystate, player.GetPosition());
             blockHandler.Update(&camera, &world, keystate);
             player.Update(&camera, &world);
-            world.Update(player.GetPosition());
+            world.Update(&camera, player.GetPosition());
             transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
             transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
             //entityMesh.Update(glm::vec3(0));

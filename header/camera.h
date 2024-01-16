@@ -17,6 +17,7 @@ class Camera{
     glm::vec3 target;
     glm::vec3 worldUp;
     glm::vec3 right;
+    glm::vec3 forward;
     glm::vec3 up;
     glm::vec3 moveDirection;
     glm::vec2 lastMouse;
@@ -42,5 +43,9 @@ public:
     glm::mat4 GetViewMatrix();
     glm::vec3 GetPosition();
     glm::vec3 GetTarget();
+    glm::vec3 GetRight();
+    glm::vec3 GetForward();
+    glm::vec3 GetUp();
+    f32 GetFov();
     i8 GetLookdirection();
 };

@@ -1,5 +1,5 @@
 {
     "region_size" : 16,
-    "biome" : "plain_hills",
+    "biome" : "tundra",
     "render_distance": 3
 }

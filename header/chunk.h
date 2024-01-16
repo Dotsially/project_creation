@@ -11,11 +11,12 @@
 #include "chunk_pool.h"
 
 #define CHUNK_SIZE 32
-#define CHUNK_HEIGHT 128
+#define CHUNK_HEIGHT 32
 
 class Chunk{
-    glm::vec2 position;
     BlockInstanceData chunkData[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
+    glm::vec2 position;
+    glm::vec3 chunkCenter;
     std::map<u8, BlockData>* blocks;
     std::map<std::string, BlockModelData>* blockModels;
     ChunkMesh* chunkMesh = nullptr;
@@ -42,7 +43,8 @@ public:
     bool ConstainsBlock(i32 x, i32 y, i32 z);
     bool IsWithinChunk(i32 x, i32 y, i32 z);
     glm::vec2 GetPosition();
+    glm::vec3 GetChunkCenter();
     i32 GetCoordinateTerrainHeight(i32 x, i32 z);
-    
     u8 hasChunkMesh = 0;
+    u8 isOnFrustum = 0;
 };

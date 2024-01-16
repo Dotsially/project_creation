@@ -96,7 +96,10 @@ void Camera::Update(const u8* keystate, glm::vec3 targetPosition){
 
         position = targetPosition + glm::vec3(glm::cos(angle.x)*6.0, 4.0 ,sin(angle.y)*6.0) + 0.5f;
         target = targetPosition + 0.5f;
-        
+
+        forward = -glm::normalize(position - target);
+        right = glm::normalize(glm::cross(forward, glm::vec3(0,1,0)));
+        up =  glm::normalize(glm::cross(right, forward));
     }
 }    
 
@@ -175,9 +178,25 @@ glm::vec3 Camera::GetPosition(){
     return position;
 }
 
+glm::vec3 Camera::GetForward(){
+    return forward;
+}
+
 glm::vec3 Camera::GetTarget(){
     return target;
 }       
+
+glm::vec3 Camera::GetRight(){
+    return right;
+}
+
+glm::vec3 Camera::GetUp(){
+    return up;
+}
+
+f32 Camera::GetFov(){
+    return fov;
+}
 
 i8 Camera::GetLookdirection(){
     return lookDirection;

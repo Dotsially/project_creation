@@ -13,7 +13,10 @@ void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::strin
     this->blocks = blocks;
     this->blockModels = blockModels;
     position = glm::vec2(x,z);
-    
+    chunkCenter = glm::vec3((position.x+0.5)*CHUNK_SIZE,
+        CHUNK_HEIGHT*0.5,
+        (position.y+0.5)*CHUNK_SIZE);
+
     for(i32 x = 0; x < CHUNK_SIZE; x++){
         for(i32 z = 0; z < CHUNK_SIZE; z++){
             i32 value = biome.elevation + biome.height;
@@ -166,7 +169,7 @@ void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z){
 
 void Chunk::Draw(glm::vec3 cameraPosition, glm::vec3 fogColor){
     if(chunkMesh != nullptr){
-        chunkMesh->mesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE+0.5, 0.5, position.y*CHUNK_SIZE+0.5), cameraPosition, fogColor);
+        chunkMesh->mesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE, 0.0, position.y*CHUNK_SIZE), cameraPosition, fogColor);
     }
 }
 
@@ -281,4 +284,8 @@ void Chunk::DisposeChunkMesh(){
 
 ChunkMesh* Chunk::GetChunkMesh(){
     return chunkMesh;
+}
+
+glm::vec3 Chunk::GetChunkCenter(){
+    return chunkCenter;
 }

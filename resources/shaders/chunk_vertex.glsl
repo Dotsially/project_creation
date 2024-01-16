@@ -39,6 +39,6 @@ void main(){
     }
 
 
-    gl_Position = projection * view * transform * vec4(pos.x - 0.5, pos.y -0.5, pos.z - 0.5, 1.0);
+    gl_Position = projection * view * transform * vec4(pos.x, pos.y, pos.z, 1.0);
     world_pos = (transform * vec4(pos-0.5, 1.0)).xyz;
 }

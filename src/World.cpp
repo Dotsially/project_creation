@@ -1,7 +1,7 @@
 #include "world.h"
 #include <iostream>
 
-World::World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
+World::World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
     sekaiReader.ReadWorld(&worldData);
     REGION_SIZE = worldData.regionSize;
     renderDistance = worldData.renderDistance;
@@ -32,6 +32,7 @@ World::World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelDa
             chunks[z+x*REGION_SIZE].CreateChunkData(blocks, blockModels, biome, biomeNoise, x,z);
         }
     }
+    chunkFrustum.Initialize(camera);
 }
 
 World::~World(){
@@ -39,9 +40,9 @@ World::~World(){
     delete(chunks);
 }
 
-void World::Update(glm::vec3 playerPosition){
+void World::Update(Camera* camera, glm::vec3 playerPosition){
     Chunk* neighbors[4];
-    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/32, playerPosition.z/32);
+    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/CHUNK_SIZE, playerPosition.z/CHUNK_SIZE);
     for(u32 x = 0; x < REGION_SIZE; x++){
         for(u32 z = 0; z < REGION_SIZE; z++){
             glm::ivec2 chunkPos = chunks[z+x*REGION_SIZE].GetPosition();
@@ -49,6 +50,9 @@ void World::Update(glm::vec3 playerPosition){
                 && playerChunkPos.x-chunkPos.x >= -renderDistance 
                 && playerChunkPos.y-chunkPos.y <= renderDistance 
                 && playerChunkPos.y-chunkPos.y >= -renderDistance){
+                    
+                    chunkFrustum.IsOnFrustum(camera, &chunks[z+x*REGION_SIZE]);
+
                     if(!chunks[z+x*REGION_SIZE].hasChunkMesh){
                         chunks[z + x * REGION_SIZE].RequestAvailableChunkMesh(chunkPool.GetAvailableChunkMesh());
                         
@@ -71,7 +75,7 @@ void World::Draw(glm::vec3 playerPosition, glm::vec3 cameraPosition){
         biome.colors["clear"].fogColor[1],
         biome.colors["clear"].fogColor[2]};
 
-    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/32, playerPosition.z/32);
+    glm::ivec2 playerChunkPos = glm::vec2(playerPosition.x/CHUNK_SIZE, playerPosition.z/CHUNK_SIZE);
     for(u32 x = 0; x < REGION_SIZE; x++){
         for(u32 z = 0; z < REGION_SIZE; z++){
             glm::ivec2 chunkPos = chunks[z+x*REGION_SIZE].GetPosition();
@@ -79,7 +83,9 @@ void World::Draw(glm::vec3 playerPosition, glm::vec3 cameraPosition){
                 && playerChunkPos.x-chunkPos.x >= -renderDistance 
                 && playerChunkPos.y-chunkPos.y <= renderDistance 
                 && playerChunkPos.y-chunkPos.y >= -renderDistance){
-                chunks[z+x*REGION_SIZE].Draw(cameraPosition, fogColor);
+                    if(chunks[z+x*REGION_SIZE].isOnFrustum){
+                        chunks[z+x*REGION_SIZE].Draw(cameraPosition, fogColor);
+                    }
             }
         }
     }
@@ -100,27 +106,27 @@ u8 World::IsWithinWorld(glm::vec3 position){
 }
 
 u8 World::ContainsBlock(i32 x, i32 y, i32 z){
-    glm::ivec2 chunkCoordinate(x/32, z/32);
+    glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
     return chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-        .ConstainsBlock(x%32, y, z%32);
+        .ConstainsBlock(x%CHUNK_SIZE, y, z%CHUNK_SIZE);
 }
 
 void World::AddBlock(i32 x, i32 y, i32 z, BlockInstanceData block){
     if(IsWithinWorld(x,y,z)){
-        glm::ivec2 chunkCoordinate(x/32, z/32);
+        glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
         Chunk* neighbors[4];
         GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
         chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-            .AddBlock(neighbors, x%32, y, z%32, block);
+            .AddBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE, block);
     }
 }
 
 void World::RemoveBlock(i32 x, i32 y, i32 z){
-    glm::ivec2 chunkCoordinate(x/32, z/32);
+    glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
     Chunk* neighbors[4];
     GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
     chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-        .RemoveBlock(neighbors, x%32, y, z%32);
+        .RemoveBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE);
 
     Chunk* tempNeighbors[4];
     if(z%32 == 0 && neighbors[0] != nullptr){
@@ -175,9 +181,9 @@ void World::GetNeighbors(Chunk* neighbors[4], i32 x, i32 z){
 }
 
 i32 World::GetTerrainHeight(i32 x, i32 z){
-    glm::ivec2 chunkCoordinate(x/32, z/32);
+    glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
     return chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-        .GetCoordinateTerrainHeight(x%32,z%32);
+        .GetCoordinateTerrainHeight(x%CHUNK_SIZE,z%CHUNK_SIZE);
 }
 
 glm::vec3 World::GetSkyColor(){

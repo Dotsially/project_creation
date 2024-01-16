@@ -1,13 +1,17 @@
 #pragma once
 #include "depedencies.h"
+#include "camera.h"
+#include "frustum.h"
 #include "chunk.h"
 #include "chunk_pool.h"
 #include "block_data.h"
 #include "biome.h"
 #include "world_data.h"
+#include "world_data.h"
 
 class World{
     BiomeData biome;
+    Frustum chunkFrustum;
     Chunk* chunks;
     u32 REGION_SIZE = 16;
     i32 renderDistance = 4;
@@ -15,10 +19,10 @@ class World{
     WorldData worldData;
     ChunkPool chunkPool;
 public:
-    World(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes);
+    World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes);
     ~World();
     
-    void Update(glm::vec3 playerPosition);
+    void Update(Camera* camera, glm::vec3 playerPosition);
     void Draw(glm::vec3 playerPosition, glm::vec3 cameraPosition);
     void AddBlock(i32 x, i32 y, i32 z, BlockInstanceData block);
     void RemoveBlock(i32 x, i32 y, i32 z);
