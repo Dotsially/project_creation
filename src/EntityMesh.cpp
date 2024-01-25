@@ -16,7 +16,6 @@ EntityMesh::EntityMesh(){
 
 
     mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());
-
 }
 
 EntityMesh::~EntityMesh(){
@@ -44,8 +43,6 @@ void EntityMesh::Draw(glm::vec3 position, Camera* camera){
     glm::vec3 cameraRight = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
     glm::vec3 cameraUp = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
     glm::vec3 finalPosition = glm::vec3(position.x+0.5f, position.y+1.0f, position.z);
-    //transform = glm::translate(glm::mat4(1.0f), finalPosition);
-    //transform = glm::scale(transform, glm::vec3(1,2,1));
 
     glUniform3fv(3, 1, glm::value_ptr(finalPosition));
     glUniform3fv(4, 1, glm::value_ptr(cameraRight));

@@ -13,7 +13,7 @@ private:
 
     SekaiReader sekaiReader;
 public:
-    BlockManager();
+    BlockManager(std::map<std::string, glm::vec2>* textures);
     ~BlockManager();
 
     std::map<u8, BlockData>* GetBlocks();

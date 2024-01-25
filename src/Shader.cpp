@@ -29,6 +29,10 @@ void Shader::UseProgram()
     glUseProgram(this->programID);
 }
 
+u32 Shader::GetProgram(){
+    return programID;
+}
+
 u32 Shader::GenShader(std::string path, u32 type){
     u32 shader = glCreateShader(type);
     std::string shaderCode = LoadShaderFromFile(path);
@@ -61,7 +65,7 @@ std::string Shader::LoadShaderFromFile(std::string filePath){
     }
     catch (std::ifstream::failure& e)
     {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << "IN::" << filePath << std::endl;
     }   
     return shaderCode;
 }

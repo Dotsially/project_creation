@@ -1,6 +1,8 @@
 #include "sekai_reader.h"
 #include <iostream>
 #include <fstream>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 using json = nlohmann::json;
 
@@ -35,12 +37,12 @@ std::vector<std::string> SekaiReader::ReadDirectory(std::string path){
     return files;
 }
 
-void SekaiReader::ReadBlocks(std::map<std::string, u8>* blockNames, std::map<u8,BlockData>* blocks){
+void SekaiReader::ReadBlocks(std::map<std::string, u8>* blockNames, std::map<u8,BlockData>* blocks, std::map<std::string, glm::vec2>* textures){
     std::vector<std::string> files = ReadDirectory("resources/blocks");
     i32 fileIDCount = 1;
 
     for(std::string file : files){
-        BlockData block = ReadBlockFile("resources/blocks/" + file, fileIDCount);
+        BlockData block = ReadBlockFile(textures, "resources/blocks/" + file, fileIDCount);
         blockNames->operator[](block.blockNameID) = block.blockID;
         blocks->operator[](block.blockID) = block;
         fileIDCount++;
@@ -108,7 +110,7 @@ void SekaiReader::ReadBiomes(std::map<std::string, BiomeData>* biomes){
 
 }
 
-BlockData SekaiReader::ReadBlockFile(std::string path, u8 id){
+BlockData SekaiReader::ReadBlockFile(std::map<std::string, glm::vec2>* textures, std::string path, u8 id){
     BlockData block;
     std::fstream fileStream(path);
 
@@ -119,12 +121,12 @@ BlockData SekaiReader::ReadBlockFile(std::string path, u8 id){
     block.blockID = id;
     block.blockModelID = jsonData["block_model"];
     
-    block.top = glm::vec2(jsonData["uv_top"][0], jsonData["uv_top"][1]);
-    block.bottom = glm::vec2(jsonData["uv_bottom"][0], jsonData["uv_bottom"][1]);
-    block.left = glm::vec2(jsonData["uv_left"][0], jsonData["uv_left"][1]);
-    block.right = glm::vec2(jsonData["uv_right"][0], jsonData["uv_right"][1]);
-    block.front = glm::vec2(jsonData["uv_front"][0], jsonData["uv_front"][1]);
-    block.back = glm::vec2(jsonData["uv_back"][0], jsonData["uv_back"][1]);
+    block.top = textures->at(jsonData["texture_top"]);
+    block.bottom = textures->at(jsonData["texture_bottom"]);
+    block.left = textures->at(jsonData["texture_left"]);
+    block.right = textures->at(jsonData["texture_right"]);
+    block.front = textures->at(jsonData["texture_front"]);
+    block.back = textures->at(jsonData["texture_back"]);
 
     
 
@@ -171,4 +173,23 @@ void SekaiReader::ReadWorld(WorldData* worldData){
     worldData->renderDistance = jsonData["render_distance"];
 
     fileStream.close();
+}
+
+void SekaiReader::ReadTextures(AtlasArray* atlasArray, std::map<std::string, glm::vec2>* textures){
+    std::vector<std::string> files = ReadDirectory("resources/textures/blocks");
+    
+    i32 width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);  
+    for(std::string file : files){
+        std::string filePath = "resources/textures/blocks/" + file;
+        u8* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glm::vec2 textureCoordinates = glm::vec2(0,0);
+            atlasArray->InsertTexture(data, &textureCoordinates, width, height);
+            textures->operator[](file) = textureCoordinates;
+        }
+        stbi_image_free(data);
+    }    
+
 }

@@ -1,10 +1,10 @@
 {
     "block_name": "grass",
     "block_model": "cube",
-    "uv_top": [2,12],
-    "uv_bottom": [1,13],
-    "uv_left": [1,12],
-    "uv_right": [1,12],
-    "uv_front": [1,12],
-    "uv_back": [1,12]
+    "texture_top": "grass_top.png",
+    "texture_bottom": "dirt.png",
+    "texture_left": "grass_side.png",
+    "texture_right": "grass_side.png",
+    "texture_front": "grass_side.png",
+    "texture_back": "grass_side.png"
 }

@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in float vertex;
@@ -10,8 +11,8 @@ layout (location = 2) uniform mat4 view;
 layout (location = 0) uniform mat4 transform;
 
 const vec2 uv_coords[4] = vec2[4](
-    vec2(0, 0), vec2(0, 1),
-    vec2(1, 1), vec2(1, 0)
+    vec2(0.0, 0.0), vec2(0.0, 1.0),
+    vec2(1.0, 1.0), vec2(1.0, 0.0)
 );
 
 
@@ -40,5 +41,5 @@ void main(){
 
 
     gl_Position = projection * view * transform * vec4(pos.x, pos.y, pos.z, 1.0);
-    world_pos = (transform * vec4(pos-0.5, 1.0)).xyz;
+    world_pos = (transform * vec4(pos, 1.0)).xyz;
 }

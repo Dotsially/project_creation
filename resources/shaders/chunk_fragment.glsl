@@ -1,6 +1,8 @@
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 
 out vec4 fragColor;
+
 
 uniform sampler2D tex;
 layout (location = 3) uniform vec3 cameraWorldPos;
@@ -14,6 +16,8 @@ flat in float shading;
 float fogEnd = 96;
 float fogStart = 90;
 
+float textureSize = 1.0/8.0;
+
 float calculate_fog(){
     float cameraPixelDistance = length(world_pos - cameraWorldPos);
     float FogRange = fogEnd - fogStart;
@@ -24,7 +28,7 @@ float calculate_fog(){
 }
 void main(){
     float fogFactor = calculate_fog();
-    vec2 texCoords =  vec2(((1/10.0)*voxel_id.x) + uv.x/10.0, ((1/16.0)*voxel_id.y) + uv.y/16.0); 
+    vec2 texCoords = textureSize*voxel_id + textureSize * fract(uv);
     
     fragColor = mix(vec4(fogColor, 1.0), vec4(vec3(texture(tex, texCoords).rgb * shading),1.0), fogFactor);
 

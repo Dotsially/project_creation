@@ -1,7 +1,7 @@
 #include "block_manager.h"
 #include <iostream>
 
-BlockManager::BlockManager(){
+BlockManager::BlockManager(std::map<std::string, glm::vec2>* textures){
     blocks[0] = BlockData{"air",0};
     blocks[255] = BlockData{
         "invalid_block", 
@@ -15,7 +15,7 @@ BlockManager::BlockManager(){
         glm::vec2(9,0),
     };
 
-    sekaiReader.ReadBlocks(&blockNames, &blocks);
+    sekaiReader.ReadBlocks(&blockNames, &blocks, textures);
 }
 
 BlockManager::~BlockManager(){

@@ -1,10 +1,10 @@
 {
     "block_name": "sand",
     "block_model": "cube",
-    "uv_top": [4,9],
-    "uv_bottom": [4,9],
-    "uv_left": [4,9],
-    "uv_right": [4,9],
-    "uv_front": [4,9],
-    "uv_back": [4,9]
+    "texture_top": "sand.png",
+    "texture_bottom": "sand.png",
+    "texture_left": "sand.png",
+    "texture_right": "sand.png",
+    "texture_front": "sand.png",
+    "texture_back": "sand.png"
 }

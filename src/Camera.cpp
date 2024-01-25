@@ -75,7 +75,8 @@ void Camera::Update(const u8* keystate, glm::vec3 targetPosition){
         direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         
         target = glm::normalize(direction);
-    
+        forward = target;
+
         right = glm::normalize(glm::cross(target, glm::vec3(0,1,0)));
     
         up =  glm::normalize(glm::cross(right, target));

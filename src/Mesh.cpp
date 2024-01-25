@@ -32,6 +32,10 @@ void Mesh::InitializeChunkMesh(i32 drawType, f32* verticesData, i32 verticesData
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
@@ -41,6 +45,10 @@ void Mesh::SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesDa
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPosition, glm::vec3 fogColor){
@@ -50,6 +58,7 @@ void Mesh::DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPositi
     glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
     glUniform3fv(4, 1, glm::value_ptr(fogColor));
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
@@ -57,13 +66,17 @@ void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize,
     glBindVertexArray(vao);
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
-    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
@@ -76,14 +89,17 @@ void Mesh::InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDat
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(f32), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(f32), (void*)0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(f32), (void*)(2*sizeof(f32)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
 }
 
 void Mesh::DrawMesh(i32 indicesSize, glm::mat4 transform){
     glBindVertexArray(vao);
     glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
