@@ -30,6 +30,6 @@ void main(){
     vec3(0.0, 0.0, 0.5);
 
     uv = uv_coords[uv_indices[gl_VertexID%6]];
-    gl_Position = projection * view * vec4(vertexPosition,1.0);
+    gl_Position = projection * view *  transform * vec4(vertexPosition,1.0);
 }
 

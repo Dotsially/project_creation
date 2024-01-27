@@ -1,0 +1,10 @@
+{
+    "block_name": "charred_earth",
+    "block_model": "cube",
+    "texture_top": "charred_earth.png",
+    "texture_bottom": "charred_earth.png",
+    "texture_left": "charred_earth.png",
+    "texture_right": "charred_earth.png",
+    "texture_front": "charred_earth.png",
+    "texture_back": "charred_earth.png"
+}

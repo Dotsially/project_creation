@@ -6,6 +6,8 @@ Entity::Entity(glm::vec2 position, World* world){
         world->GetTerrainHeight(position.x, position.y)+1,
         position.y);
     this->lookDirection = 0;
+    this->forward = glm::vec3(-1,0,0);
+    this->right = glm::vec3(0,0,-1);
 }
 
 Entity::~Entity(){
@@ -38,7 +40,28 @@ void Entity::Update(Camera* camera, World* world){
             isMoving = false;
         }
     }
-    //std::cout << position.x << position.z << std::endl;
+
+    f32 rDot = glm::dot(right, camera->GetForward());
+    f32 fDot = glm::dot(forward, camera->GetForward());
+
+    if(fDot < -0.80f){
+        flags.textureDirection = 0;
+    }
+    else if(fDot > 0.80f){
+        flags.textureDirection = 4;
+    }
+    else{
+        flags.flipped = rDot > 0.0;
+        if(glm::abs(fDot) < 0.3){
+            flags.textureDirection = 2;
+        }
+        else if(fDot < 0.0){
+            flags.textureDirection = 1;
+        }
+        else{
+            flags.textureDirection = 3;
+        }
+    }
 }
 
 glm::vec3 Entity::GetPosition(){
@@ -71,15 +94,23 @@ void Entity::ProcessInput(const u8* keystate, Camera* camera, World* world)
     switch (moveDirection){
         case 0:
             inputDirection.z = 1;
+            forward = glm::vec3(0,0,1);
+            right = glm::vec3(-1,0,0);
             break;
         case 1:
             inputDirection.x = -1;
+            forward = glm::vec3(-1,0,0);
+            right = glm::vec3(0,0,-1);
             break;
         case 2:
             inputDirection.z = -1;
+            forward = glm::vec3(0,0,-1);
+            right = glm::vec3(1,0,0);
             break;
         case 3:
             inputDirection.x = 1;
+            forward = glm::vec3(1,0,0);
+            right = glm::vec3(0,0,1);
             break;
     }  
 

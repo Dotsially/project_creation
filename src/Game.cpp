@@ -74,7 +74,7 @@ int main(int argc, char* args[]){
     Texture texture2;
     texture2.InitializeTextureFromFile("selection.png");
     Texture entityTexture;
-    entityTexture.InitializeTextureFromFile("guy.png");
+    entityTexture.InitializeTextureFromFile("player.png");
 
     Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
     Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
@@ -162,7 +162,7 @@ int main(int argc, char* args[]){
                     glm::vec3 skyColor = world.GetSkyColor();
                     glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0);
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+                    glEnable(GL_CULL_FACE);
 
                     shader.UseProgram();
                     glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
@@ -178,11 +178,14 @@ int main(int argc, char* args[]){
                         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                         selectionMesh.DrawMesh(iBuffer.size(), transform2);
                     }
+
+                    glDisable(GL_CULL_FACE);
                     shaderEntity.UseProgram();
                         entityTexture.ActivateTexture();
                         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
                         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                    entityMesh.Draw(player.GetPosition(), &camera);
+                    
+                    entityMesh.Draw(&player, &camera);
 
                     gameWindow.SwapBuffers();
                 

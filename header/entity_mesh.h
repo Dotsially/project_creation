@@ -17,5 +17,5 @@ public:
     EntityMesh();
     ~EntityMesh();
     void Update(glm::vec3 position);
-    void Draw(glm::vec3 position, Camera* camera);
+    void Draw(Entity* entity, Camera* camera);
 };

@@ -11,6 +11,8 @@ typedef struct entityFlags{
     u8 playerControlled;
     u8 item;
     u8 pickup;
+    u8 textureDirection = 0;
+    u8 flipped = 0;
 }entityFlags;
 
 class Entity{
@@ -18,8 +20,11 @@ private:
     glm::vec3 position; 
     glm::vec3 initialPosition;   
     glm::vec3 inputDirection;
+    glm::vec3 forward;
+    glm::vec3 right;
     f32 percentMoved;
     i8 lookDirection;
+
     u8 isMoving = false;
     void ProcessInput(const u8* keystate, Camera* camera, World* world);
     void Move();

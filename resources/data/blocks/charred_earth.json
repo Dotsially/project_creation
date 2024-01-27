@@ -1,0 +1,10 @@
+{
+    "block_name": "charred_stone",
+    "block_model": "cube",
+    "texture_top": "charred_stone.png",
+    "texture_bottom": "charred_stone.png",
+    "texture_left": "charred_stone.png",
+    "texture_right": "charred_stone.png",
+    "texture_front": "charred_stone.png",
+    "texture_back": "charred_stone.png"
+}
