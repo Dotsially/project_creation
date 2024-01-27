@@ -38,11 +38,11 @@ std::vector<std::string> SekaiReader::ReadDirectory(std::string path){
 }
 
 void SekaiReader::ReadBlocks(std::map<std::string, u8>* blockNames, std::map<u8,BlockData>* blocks, std::map<std::string, glm::vec2>* textures){
-    std::vector<std::string> files = ReadDirectory("resources/blocks");
+    std::vector<std::string> files = ReadDirectory("resources/data/blocks");
     i32 fileIDCount = 1;
 
     for(std::string file : files){
-        BlockData block = ReadBlockFile(textures, "resources/blocks/" + file, fileIDCount);
+        BlockData block = ReadBlockFile(textures, "resources/data/blocks/" + file, fileIDCount);
         blockNames->operator[](block.blockNameID) = block.blockID;
         blocks->operator[](block.blockID) = block;
         fileIDCount++;
@@ -55,13 +55,13 @@ BiomeData SekaiReader::ReadBiomeFile(std::string path){
     std::fstream fileStream(path);
     json jsonData = json::parse(fileStream);
 
-    biome.biomeName = jsonData["biome_name"];
-    biome.biomeType = jsonData["biome_type"];
+    biome.name = jsonData["biome_name"];
+    biome.type = jsonData["biome_type"];
     biome.height = jsonData["biome_height"];
     biome.elevation = jsonData["biome_elevation"];
 
     for(int i = 0; i < 3; i++){
-        biome.biomeLayers[i] = jsonData["biome_layers"][i];
+        biome.layers[i] = jsonData["biome_layers"][i];
     }
 
     if(jsonData.contains("biome_fog")){
@@ -92,7 +92,7 @@ BiomeData SekaiReader::ReadBiomeFile(std::string path){
                     noiseData.divisor = it["divisor"];
                 }
             }
-            biome.biomeNoise.push_back(noiseData);
+            biome.noise.push_back(noiseData);
         }
     }
 
@@ -101,11 +101,11 @@ BiomeData SekaiReader::ReadBiomeFile(std::string path){
 }
 
 void SekaiReader::ReadBiomes(std::map<std::string, BiomeData>* biomes){
-    std::vector<std::string> files = ReadDirectory("resources/biomes");
+    std::vector<std::string> files = ReadDirectory("resources/data/biomes");
 
     for(std::string file : files){
-        BiomeData biome = ReadBiomeFile("resources/biomes/" + file);
-        biomes->operator[](biome.biomeName) = biome;
+        BiomeData biome = ReadBiomeFile("resources/data/biomes/" + file);
+        biomes->operator[](biome.name) = biome;
     }
 
 }
@@ -156,10 +156,10 @@ BlockModelData SekaiReader::ReadBlockModelFile(std::string path){
 
 
 void SekaiReader::ReadBlockModels(std::map<std::string, BlockModelData>* blockModels){
-    std::vector<std::string> files = ReadDirectory("resources/block_models");
+    std::vector<std::string> files = ReadDirectory("resources/data/block_models");
 
     for(std::string file : files){
-        BlockModelData model = ReadBlockModelFile("resources/block_models/" + file);
+        BlockModelData model = ReadBlockModelFile("resources/data/block_models/" + file);
         blockModels->operator[](model.modelName) = model;
     }
 }

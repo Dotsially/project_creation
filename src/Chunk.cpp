@@ -24,8 +24,8 @@ void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::strin
                 value = 0;
                 for(int i = 0; i < noise.size(); i++){
                     i32 noiseValue = (fnlGetNoise2D(&noise[i], x + (position.x*CHUNK_SIZE), z + (position.y*CHUNK_SIZE))+1)*biome.height+biome.elevation;   
-                    if(biome.biomeNoise[i].divisor > 0){
-                        noiseValue = noiseValue/biome.biomeNoise[i].divisor;
+                    if(biome.noise[i].divisor > 0){
+                        noiseValue = noiseValue/biome.noise[i].divisor;
                     }
                     value += noiseValue;
                 }   

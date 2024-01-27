@@ -7,7 +7,7 @@ Biome::Biome(BlockManager* blockManager){
     for (auto& [key, biome] : biomes){ 
         for(int i = 0; i < 3; i++){
             biome.biomeLayersBlockID[i] = 
-                blockManager->BlockNameToBlockId(biome.biomeLayers[i]);
+                blockManager->BlockNameToBlockId(biome.layers[i]);
         }
     }
 }

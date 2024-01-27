@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "entity.h"
 #include "entity_mesh.h"
+
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 

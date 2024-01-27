@@ -14,16 +14,16 @@ World::World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::stri
     
     std::vector<fnl_state> biomeNoise;
 
-    for(int i = 0; i < biome.biomeNoise.size(); i++){
+    for(int i = 0; i < biome.noise.size(); i++){
         fnl_state noise = fnlCreateState();
-        noise.noise_type = fnl_noise_type(biome.biomeNoise[i].noiseType);
-        noise.fractal_type = fnl_fractal_type(biome.biomeNoise[i].fractalType);
-        noise.cellular_return_type = fnl_cellular_return_type(biome.biomeNoise[i].cellularReturnType);
-        noise.frequency = biome.biomeNoise[i].frequency;
-        noise.octaves = biome.biomeNoise[i].octaves;
-        noise.lacunarity = biome.biomeNoise[i].lacuranity;
-        noise.gain = biome.biomeNoise[i].gain;
-        noise.weighted_strength = biome.biomeNoise[i].weightedStrength;
+        noise.noise_type = fnl_noise_type(biome.noise[i].noiseType);
+        noise.fractal_type = fnl_fractal_type(biome.noise[i].fractalType);
+        noise.cellular_return_type = fnl_cellular_return_type(biome.noise[i].cellularReturnType);
+        noise.frequency = biome.noise[i].frequency;
+        noise.octaves = biome.noise[i].octaves;
+        noise.lacunarity = biome.noise[i].lacuranity;
+        noise.gain = biome.noise[i].gain;
+        noise.weighted_strength = biome.noise[i].weightedStrength;
         biomeNoise.push_back(noise);
     }
 

@@ -22,12 +22,12 @@ typedef struct BiomeFogData{
 }BiomeFogData;
 
 typedef struct BiomeData{
-    std::string biomeName;
-    std::string biomeType;
+    std::string name;
+    std::string type;
     u8 height;
     u8 elevation;
-    std::vector<BiomeNoiseData> biomeNoise;
+    std::vector<BiomeNoiseData> noise;
     std::map<std::string, BiomeFogData> colors;
-    std::string biomeLayers[3];
+    std::string layers[3];
     u8 biomeLayersBlockID[3];
 }BiomeData;
