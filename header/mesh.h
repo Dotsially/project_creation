@@ -10,6 +10,7 @@
 class Mesh{
     u32 vao;
     u32 vbo;
+    u32 vboInstanced;
     u32 ebo;
     i32 drawType;
 public:
@@ -21,11 +22,16 @@ public:
     void DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPosition, glm::vec3 fogColor);
 
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void InitializeBillboardMesh(i32 drawType, f32* verticesData, i32 verticesDataSize);
+    void DrawBillboardMesh(i32 indicesSize);
     void DrawMesh(i32 indicesSize, glm::mat4 transform);
 
     //TODO
-    void InitializeInstancedMesh();
-    void DrawInstancedMesh();
+    void InitializeInstancedMesh(i32 drawType, f32* verticesData, i32 verticesDataSize);
+    void AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
+    void SendBillboardData(i32 drawType, f32* verticesData, i32 verticesDataSize);
+    void DrawInstancedBillboard(i32 indicesSize);
+    
 
-    void InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void InitializeItemMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
 };

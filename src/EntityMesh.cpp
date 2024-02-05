@@ -5,17 +5,16 @@ EntityMesh::EntityMesh(){
     mesh = Mesh();
 
     for(i32 i = 0; i < 4; i++){
-        vertices.push_back(VerticesList::verticesEntity1x1[0+(i*4)]);
-        
-        vertices.push_back(VerticesList::verticesEntity1x1[1+(i*4)]);
+        vertices.push_back(VerticesList::verticesEntity1x1[i*2]);
+        vertices.push_back(VerticesList::verticesEntity1x1[1+i*2]);
+        vertices.push_back(0);
     }
 
     for(u32 i : VerticesList::indicesEntity){
-                indices.push_back(i);
+        indices.push_back(i);
     }
 
-
-    mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());
+    mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());    
 }
 
 EntityMesh::~EntityMesh(){
@@ -41,5 +40,5 @@ void EntityMesh::Draw(Entity* entity, Camera* camera){
     glUniform1i(6, entity->flags.textureDirection);
     glUniform1i(7, flipped);
     
-    mesh.DrawMesh(indices.size(), transform);
+    mesh.DrawBillboardMesh(indices.size());
 }

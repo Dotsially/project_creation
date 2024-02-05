@@ -44,10 +44,10 @@ void Entity::Update(Camera* camera, World* world){
     f32 rDot = glm::dot(right, camera->GetForward());
     f32 fDot = glm::dot(forward, camera->GetForward());
 
-    if(fDot < -0.80f){
+    if(fDot < -0.7f){
         flags.textureDirection = 0;
     }
-    else if(fDot > 0.80f){
+    else if(fDot > 0.7f){
         flags.textureDirection = 4;
     }
     else{

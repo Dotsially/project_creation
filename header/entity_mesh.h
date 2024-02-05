@@ -10,7 +10,6 @@
 class EntityMesh{
     std::vector<f32> vertices;
     std::vector<u32> indices;
-    glm::mat4 transform = glm::mat4(1.0f);
     Mesh mesh;
 
 public:

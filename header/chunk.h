@@ -9,6 +9,7 @@
 #include "block_data.h"
 #include "biome_data.h"
 #include "chunk_pool.h"
+#include "dungeon.h"
 
 #define CHUNK_SIZE 32
 #define CHUNK_HEIGHT 32
@@ -27,7 +28,7 @@ class Chunk{
 public:
     Chunk();
     ~Chunk();
-    void CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z); 
+    void CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z); 
     void CreateChunkMesh(Chunk** chunks);
     void SendMeshData();
     void Draw(glm::vec3 cameraPosition, glm::vec3 fogColor);

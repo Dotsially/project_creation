@@ -18,7 +18,9 @@
 #include "world.h"
 #include "camera.h"
 #include "entity.h"
+#include "item_manager.h"
 #include "entity_mesh.h"
+#include "binary_tree.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -52,6 +54,8 @@ int main(int argc, char* args[]){
         }
         
     }
+
+
     Window gameWindow = Window(SCREEN_WIDTH, SCREEN_HEIGHT, "World");
     GameState gameState = GAMEPLAY;
     //opengl stuff
@@ -63,14 +67,20 @@ int main(int argc, char* args[]){
 
     BlockModel blockModel;
 
-    TexturePacker texturePacker;
-    texturePacker.PackTextures();
+    TexturePacker blockTexturePacker;
+    blockTexturePacker.PackTextures("resources/textures/blocks");
 
-    BlockManager blockManager(texturePacker.GetTextures());
+    TexturePacker itemTexturePacker;
+    itemTexturePacker.PackTextures("resources/textures/items");
+
+    BlockManager blockManager(blockTexturePacker.GetTextures());
+    ItemManager itemManager(itemTexturePacker.GetTextures());
     Biome biome(&blockManager);
 
     Texture texture; 
-    texture.InitializeTextureFromAtlas(texturePacker.GetTextureAtlas());
+    texture.InitializeTextureFromAtlas(blockTexturePacker.GetTextureAtlas());
+    Texture itemTexture; 
+    itemTexture.InitializeTextureFromAtlas(itemTexturePacker.GetTextureAtlas());
     Texture texture2;
     texture2.InitializeTextureFromFile("selection.png");
     Texture entityTexture;
@@ -79,8 +89,7 @@ int main(int argc, char* args[]){
     Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
     Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
     Shader shaderEntity = Shader("entity_vertex.glsl", "entity_fragment.glsl");
-
-
+    Shader shaderItem = Shader("item_vertex.glsl", "item_fragment.glsl");
 
     while (!gameWindow.WindowShouldClose())
     {
@@ -109,13 +118,17 @@ int main(int argc, char* args[]){
                 break;    
             case GAMEPLAY:            
                 Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,0,0));
-                World world(&camera, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
-
+                Dungeon dungeon;
+                dungeon.CreateDungeonFloor();
+                World world(&camera, &dungeon, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
+                itemManager.SetupItems(64, dungeon.GetRooms());
                 BlockRaycastHandler blockHandler;
                 Entity player = Entity(glm::vec2(2,8), &world);
                 player.flags.playerControlled = 1;
                 
                 
+                itemManager.CreateItemMesh();
+
                 EntityMesh entityMesh = EntityMesh();
                 std::cout << "world created" << std::endl;
 
@@ -180,6 +193,13 @@ int main(int argc, char* args[]){
                     }
 
                     glDisable(GL_CULL_FACE);
+
+                    shaderItem.UseProgram();
+                        itemTexture.ActivateTexture();
+                        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                        glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+                    itemManager.DrawItems(&camera);
+
                     shaderEntity.UseProgram();
                         entityTexture.ActivateTexture();
                         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
@@ -190,6 +210,8 @@ int main(int argc, char* args[]){
                     gameWindow.SwapBuffers();
                 
                 }
+
+                dungeon.DestroyDungeonFloor();
 
                 break;
         }

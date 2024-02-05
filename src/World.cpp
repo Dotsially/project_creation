@@ -1,7 +1,7 @@
 #include "world.h"
 #include <iostream>
 
-World::World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
+World::World(Camera* camera, Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes){
     sekaiReader.ReadWorld(&worldData);
     REGION_SIZE = worldData.regionSize;
     renderDistance = worldData.renderDistance;
@@ -29,9 +29,10 @@ World::World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::stri
 
     for(u32 x = 0; x < REGION_SIZE; x++){
         for(u32 z = 0; z < REGION_SIZE; z++){
-            chunks[z+x*REGION_SIZE].CreateChunkData(blocks, blockModels, biome, biomeNoise, x,z);
+            chunks[z+x*REGION_SIZE].CreateChunkData(dungeon, blocks, blockModels, biome, biomeNoise, x,z);
         }
     }
+
     chunkFrustum.Initialize(camera);
 }
 

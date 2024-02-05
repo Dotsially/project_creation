@@ -11,7 +11,7 @@ class TexturePacker{
     std::map<std::string, glm::vec2> textures;
 public:
 
-    void PackTextures();
+    void PackTextures(std::string path);
     AtlasArray* GetTextureAtlas();
     std::map<std::string, glm::vec2>* GetTextures();
     u32 GetTextureAtlasSize();   

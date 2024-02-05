@@ -1,0 +1,5 @@
+{
+    "name" : "greater_potion",
+    "texture" : "greater_potion.png",
+    "consumable" : 1
+}

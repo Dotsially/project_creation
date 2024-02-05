@@ -175,13 +175,36 @@ void SekaiReader::ReadWorld(WorldData* worldData){
     fileStream.close();
 }
 
-void SekaiReader::ReadTextures(AtlasArray* atlasArray, std::map<std::string, glm::vec2>* textures){
-    std::vector<std::string> files = ReadDirectory("resources/textures/blocks");
+void SekaiReader::ReadItems(std::map<u8, ItemData>* items, std::map<std::string, glm::vec2>* textures){
+    std::vector<std::string> files = ReadDirectory("resources/data/items");
+    u8 fileCount = 0;
+    for(std::string file : files){
+        ItemData item = ReadItemFiles(textures, "resources/data/items/" + file);
+        items->operator[](fileCount) = item;
+        fileCount++;
+    }
+}
+
+ItemData SekaiReader::ReadItemFiles(std::map<std::string, glm::vec2>* textures, std::string path){ 
+    ItemData item;
+    std::fstream fileStream(path);
+    json jsonData = json::parse(fileStream);
+
+    item.name = jsonData["name"];
+    item.texture = textures->at(jsonData["texture"]);
+    item.consumable = (i32)jsonData["consumable"];
+
+    fileStream.close();
+    return item;
+}
+
+void SekaiReader::ReadTextures(AtlasArray* atlasArray, std::map<std::string, glm::vec2>* textures, std::string path){
+    std::vector<std::string> files = ReadDirectory(path);
     
     i32 width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);  
     for(std::string file : files){
-        std::string filePath = "resources/textures/blocks/" + file;
+        std::string filePath = path + "/" + file;
         u8* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {

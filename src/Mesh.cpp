@@ -5,7 +5,8 @@
 Mesh::Mesh(){
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
-    glGenVertexArrays(1, &vao);    
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vboInstanced);
 }
 
 Mesh::~Mesh(){ 
@@ -40,11 +41,11 @@ void Mesh::InitializeChunkMesh(i32 drawType, f32* verticesData, i32 verticesData
 
 void Mesh::SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -79,7 +80,7 @@ void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+void Mesh::InitializeItemMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
     this->drawType = drawType;
     glBindVertexArray(vao);
     
@@ -89,17 +90,69 @@ void Mesh::InitializeEntityMesh(i32 drawType, f32* verticesData, i32 verticesDat
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(f32), (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(f32), (void*)(2*sizeof(f32)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)(3*sizeof(f32)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)(5*sizeof(f32)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::InitializeInstancedMesh(i32 drawType, f32* verticesData, i32 verticesDataSize){
+    this->drawType = drawType;
+    glBindVertexArray(vao);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+    
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), (void*)0);
+    glEnableVertexAttribArray(0);   
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+void Mesh::AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize){
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vboInstanced);
+    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+    
+    glEnableVertexAttribArray(1);   
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)0);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(3*sizeof(f32)));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(5*sizeof(f32)));
+    
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::DrawMesh(i32 indicesSize, glm::mat4 transform){
     glBindVertexArray(vao);
     glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Mesh::DrawBillboardMesh(i32 indicesSize){
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Mesh::DrawInstancedBillboard(i32 indicesSize){
+    glBindVertexArray(vao);
+    glDrawElementsInstanced(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0, 32);
     glBindVertexArray(0);
 }

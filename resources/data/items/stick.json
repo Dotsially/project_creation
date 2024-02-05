@@ -1,0 +1,5 @@
+{
+    "name" : "stick",
+    "texture" : "stick.png",
+    "consumable" : 1
+}

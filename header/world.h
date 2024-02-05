@@ -7,7 +7,7 @@
 #include "block_data.h"
 #include "biome.h"
 #include "world_data.h"
-#include "world_data.h"
+#include "dungeon.h"
 
 class World{
     BiomeData biome;
@@ -19,7 +19,7 @@ class World{
     WorldData worldData;
     ChunkPool chunkPool;
 public:
-    World(Camera* camera, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes);
+    World(Camera* camera, Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes);
     ~World();
     
     void Update(Camera* camera, glm::vec3 playerPosition);

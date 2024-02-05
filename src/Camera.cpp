@@ -20,7 +20,7 @@ Camera::Camera(CameraType type, glm::vec3 position){
             this->position = position;
             this->target = glm::vec3{5.0f,0.0f,5.0f};
             this->up = glm::vec3{0.0f,1.0f,0.0f};;
-            this->fov = glm::radians(60.0);
+            this->fov = glm::radians(30.0);
             this->angle = glm::vec2(0,0);
             this->lookDirection = 1;
             break; 
@@ -95,7 +95,7 @@ void Camera::Update(const u8* keystate, glm::vec3 targetPosition){
             isMoving = false;
         }
 
-        position = targetPosition + glm::vec3(glm::cos(angle.x)*6.0, 4.0 ,sin(angle.y)*6.0) + 0.5f;
+        position = targetPosition + glm::vec3(glm::cos(angle.x)*12.0, 12.0 ,sin(angle.y)*12.0) + 0.5f;
         target = targetPosition + 0.5f;
 
         forward = -glm::normalize(position - target);
@@ -131,18 +131,29 @@ void Camera::Move(){
             case 0:
                 angle.x = 4.712;
                 angle.y = 4.712;
+                
+                // angle.x = 5.498;
+                // angle.y = 5.498;
                 break;
             case 1:
                 angle.x = 0;
                 angle.y = 0;
+                // angle.x = 0.785;
+                // angle.y = 0.785;
                 break;
             case 2:
                 angle.x = 1.571; 
                 angle.y = 1.571;
+                
+                // angle.x = 2.356;
+                // angle.y = 2.356;
                 break;
             case 3:
                 angle.x = 3.142; 
-                angle.y = 3.142;    
+                angle.y = 3.142; 
+                
+                // angle.x = 3.927;
+                // angle.y = 3.927;   
                 break;
             }
             percentMoved = 0.0f;
@@ -172,6 +183,7 @@ glm::mat4 Camera::GetViewMatrix(){
 
 glm::mat4 Camera::GetProjectMatrix(){
     return glm::perspective(this->fov, 1280.0f/720.0f, 0.1f, 1000.0f);
+    //return glm::ortho(-8.0f, 8.0f, -4.5f, 4.5f, 0.1f, 100.0f);
 }
 
 

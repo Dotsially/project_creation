@@ -1,5 +1,4 @@
 #version 460 core
-#extension GL_ARB_bindless_texture : require
 
 out vec4 fragColor;
 
@@ -31,5 +30,5 @@ void main(){
     vec2 texCoords = textureSize*voxel_id + textureSize * fract(uv);
     
     fragColor = mix(vec4(fogColor, 1.0), vec4(vec3(texture(tex, texCoords).rgb * shading),1.0), fogFactor);
-
+    
 }

@@ -1,0 +1,5 @@
+{
+    "name" : "knife",
+    "texture" : "knife.png",
+    "consumable" : 1
+}

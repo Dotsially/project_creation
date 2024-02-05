@@ -8,7 +8,7 @@
 #include "biome_data.h"
 #include "block_model_data.h"
 #include "dynamic_array.h"
-
+#include "item_data.h"
 
 class SekaiReader{
 private:
@@ -16,11 +16,13 @@ private:
     BlockData ReadBlockFile(std::map<std::string, glm::vec2>* textures, std::string path, u8 id);
     BiomeData ReadBiomeFile(std::string path);
     BlockModelData ReadBlockModelFile(std::string path);
+    ItemData ReadItemFiles(std::map<std::string, glm::vec2>* textures, std::string path);
 
 public:
     void ReadBlocks(std::map<std::string, u8>* blockNames, std::map<u8, BlockData>* blocks, std::map<std::string, glm::vec2>* textures);
     void ReadBiomes(std::map<std::string, BiomeData>* biomes);
     void ReadBlockModels(std::map<std::string, BlockModelData>* blockModels);
+    void ReadItems(std::map<u8, ItemData>* items, std::map<std::string, glm::vec2>* textures);
     void ReadWorld(WorldData* worldData);
-    void ReadTextures(AtlasArray* atlasArray, std::map<std::string, glm::vec2>* textures);
+    void ReadTextures(AtlasArray* atlasArray, std::map<std::string, glm::vec2>* textures, std::string path);
 };

@@ -9,7 +9,7 @@ Chunk::~Chunk(){
 }
 
 
-void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z){
+void Chunk::CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z){
     this->blocks = blocks;
     this->blockModels = blockModels;
     position = glm::vec2(x,z);
@@ -30,15 +30,15 @@ void Chunk::CreateChunkData(std::map<u8, BlockData>* blocks, std::map<std::strin
                     value += noiseValue;
                 }   
             }
-
+            i32 dungeonValue = dungeon->GetDungeonMap()[int((z + (position.y*CHUNK_SIZE)) + (x + (position.x*CHUNK_SIZE)) * 64)];
             for(i32 y = 0; y < CHUNK_HEIGHT; y++){  
-                if(y == value){
+                if(y == dungeonValue && dungeonValue > 0){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[0],0,0,0};
                 }
-                else if(y < value && y > value-2){
+                else if(y < dungeonValue && y > dungeonValue-3){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[1],0,0,0};
                 }
-                else if(y <= value-2 || y == 0){
+                else if(y == 0){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[2],0,0,0};
                 }
                 else{
@@ -259,6 +259,10 @@ void Chunk::CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z){
     // }
     // else if(chunkData[x][y-1][z] == 0){
     //     AddFullBlockFace(5, blocks[chunkData[x][y][z]].bottom, glm::vec3(x,y,z));
+    // }
+
+    // if(y == 0 && chunkData[x][y+1][z].blockID == 0){
+    //     AddFace(4, glm::vec3(x,y,z));
     // }
 
     if(y + 1 >= CHUNK_HEIGHT){

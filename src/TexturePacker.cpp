@@ -3,8 +3,8 @@
 #include "stb_image_write.h"
 
 
-void TexturePacker::PackTextures(){
-    sekaiReader.ReadTextures(&textureAtlas, &textures);
+void TexturePacker::PackTextures(std::string path){
+    sekaiReader.ReadTextures(&textureAtlas, &textures, path);
 }
 
 
