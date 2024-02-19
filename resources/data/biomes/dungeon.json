@@ -1,12 +1,12 @@
 {
     "biome_name" : "dungeon",
-    "biome_type" : "overworld",
+    "biome_type" : "dungeon",
     "biome_height": 8,
     "biome_elevation": 3,
     "biome_layers" : ["dungeon_wall", "dungeon_wall", "dungeon_floor"],
     "biome_fog" : {
         "clear" : {
-            "fog_color" : [0.529, 0.8, 0.922],   
+            "fog_color" : [0.1, 0.1, 0.1],   
             "sky_color" : [0.0, 0.0, 0.0]
         }
     }

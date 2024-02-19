@@ -1,20 +1,24 @@
 #pragma once
 #include "depedencies.h"
-#include "entity.h"
+#include "entity_data.h"
 #include "mesh.h"
 #include "camera.h"
 #include "vertices_list.h"
 #include <vector>
+#include <map>
 
 
 class EntityMesh{
-    std::vector<f32> vertices;
-    std::vector<u32> indices;
     Mesh mesh;
+    std::vector<f32> vertices;
+    std::vector<f32> instanceData;
+    std::vector<u32> indices;
+    u32 instanceCount;
+    u8 initialized = 0;
 
 public:
-    EntityMesh();
-    ~EntityMesh();
-    void Update(glm::vec3 position);
-    void Draw(Entity* entity, Camera* camera);
+    void InitializeEntityMesh();
+    void DestroyEntityMesh();
+    void Update(std::map<u32, EntityData>* entities);
+    void Draw(Camera* camera);
 };

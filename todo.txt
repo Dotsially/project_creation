@@ -24,3 +24,10 @@ Done:
 [X] Create a block data class for the chunk so that different growth stages 
     and directional blocks work and visibility of said block.
 [X] Create a file reader that reads and translates json files of block data to a block class
+
+
+
+
+
+
+-- Rework world. Add EntityManager for entity system and Entity for data so world can also access entity data and vise versa. 

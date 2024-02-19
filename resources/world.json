@@ -1,5 +1,5 @@
 {
-    "region_size" : 2,
-    "biome" : "dungeon",
+    "region_size" : 16,
+    "biome" : "tundra",
     "render_distance": 3
 }

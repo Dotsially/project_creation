@@ -24,16 +24,19 @@ class Chunk{
     Chunk* chunkNeighbors[4];
 
     void AddFace(u32 faceIndex, glm::vec3 position);
-    void CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z);
+    void CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight);
 public:
     Chunk();
     ~Chunk();
-    void CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z); 
-    void CreateChunkMesh(Chunk** chunks);
+    void CreateChunkDataOverworld(std::vector<fnl_state> noise, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, i32 x, i32 z); 
+    void CreateChunkDataDungeon(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, i32 x, i32 z); 
+    void CreateChunkMesh(Chunk** chunks, u8 shelterHeight);
+    void OrganizeBlock(Chunk** chunks, i32 x, i32 y, i32 z);
+    void OrganizeChunk(Chunk** chunks);
     void SendMeshData();
     void Draw(glm::vec3 cameraPosition, glm::vec3 fogColor);
-    void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, BlockInstanceData block);
-    void RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z);
+    void AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight, BlockInstanceData block);
+    void RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight);
     void RequestAvailableChunkMesh(ChunkMesh* chunkMesh);
     void DisposeChunkMesh();
     u32 GetChunkMeshSize();

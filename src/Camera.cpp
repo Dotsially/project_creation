@@ -187,7 +187,7 @@ glm::mat4 Camera::GetProjectMatrix(){
 }
 
 
-glm::vec3 Camera::GetPosition(){
+glm::vec3 Camera::GetPosition(){    
     return position;
 }
 

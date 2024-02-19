@@ -8,8 +8,7 @@ Chunk::~Chunk(){
 
 }
 
-
-void Chunk::CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, std::vector<fnl_state> noise, i32 x, i32 z){
+void Chunk::CreateChunkDataOverworld(std::vector<fnl_state> noise, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, i32 x, i32 z){
     this->blocks = blocks;
     this->blockModels = blockModels;
     position = glm::vec2(x,z);
@@ -30,15 +29,15 @@ void Chunk::CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, s
                     value += noiseValue;
                 }   
             }
-            i32 dungeonValue = dungeon->GetDungeonMap()[int((z + (position.y*CHUNK_SIZE)) + (x + (position.x*CHUNK_SIZE)) * 64)];
+
             for(i32 y = 0; y < CHUNK_HEIGHT; y++){  
-                if(y == dungeonValue && dungeonValue > 0){
+                if(y == value){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[0],0,0,0};
                 }
-                else if(y < dungeonValue && y > dungeonValue-3){
+                else if(y < value && y > value-2){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[1],0,0,0};
                 }
-                else if(y == 0){
+                else if(y <= value-2 || y == 0){
                     chunkData[x][y][z] = {biome.biomeLayersBlockID[2],0,0,0};
                 }
                 else{
@@ -49,7 +48,36 @@ void Chunk::CreateChunkData(Dungeon* dungeon, std::map<u8, BlockData>* blocks, s
     }
 }
 
-void Chunk::CreateChunkMesh(Chunk** chunks){
+
+void Chunk::CreateChunkDataDungeon(Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, BiomeData biome, i32 x, i32 z){
+    this->blocks = blocks;
+    this->blockModels = blockModels;
+    position = glm::vec2(x,z);
+    chunkCenter = glm::vec3((position.x+0.5)*CHUNK_SIZE,
+        CHUNK_HEIGHT*0.5,
+        (position.y+0.5)*CHUNK_SIZE);
+
+    for(i32 x = 0; x < CHUNK_SIZE; x++){
+        for(i32 z = 0; z < CHUNK_SIZE; z++){
+            DungeonMap dungeonValue = dungeon->GetDungeonMap()[int((z + (position.y*CHUNK_SIZE)) + (x + (position.x*CHUNK_SIZE)) * 64)];
+            for(i32 i = 0; i < 1; i++){
+                for(i32 y = i*4; y < i*4+4; y++){  
+                    if(y <= dungeonValue.elevation + i*4 && y > i*4){
+                        chunkData[x][y][z] = {dungeonValue.blockType,0,0,0};
+                    }
+                    else if(y == i*4){
+                        chunkData[x][y][z] = {dungeonValue.blockType,0,0,0};
+                    }
+                    else{
+                        chunkData[x][y][z] = {0,0,0,0};
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Chunk::CreateChunkMesh(Chunk** chunks, u8 shelterHeight){
     if(chunkMesh != nullptr){
         chunkMesh->indicesCount = 0;
         chunkMesh->vertices.clear();
@@ -57,14 +85,24 @@ void Chunk::CreateChunkMesh(Chunk** chunks){
     }
 
     for(i32 x = 0; x < CHUNK_SIZE; x++){
-        for(i32 y = 0; y < CHUNK_HEIGHT; y++){
+        for(i32 y = 0; y < shelterHeight; y++){
             for(i32 z = 0; z < CHUNK_SIZE; z++){
-                    CreateBlock(chunks, x,y,z);
+                    CreateBlock(chunks, x,y,z, shelterHeight);
                 }
         }
     }
 
     chunkMesh->mesh.InitializeChunkMesh(GL_DYNAMIC_DRAW, GetChunkMeshData(), GetChunkMeshSize(), GetChunkIndicesData(), GetChunkIndicesSize());
+}
+
+void Chunk::OrganizeChunk(Chunk** chunks){
+    for(i32 x = 0; x < CHUNK_SIZE; x++){
+        for(i32 y = 0; y < CHUNK_HEIGHT; y++){
+            for(i32 z = 0; z < CHUNK_SIZE; z++){
+                    OrganizeBlock(chunks, x,y,z);
+                }
+        }
+    }
 }
 
 void Chunk::AddFace(u32 faceIndex, glm::vec3 position){
@@ -84,31 +122,36 @@ void Chunk::AddFace(u32 faceIndex, glm::vec3 position){
     
         chunkMesh->vertices.push_back(i);
         chunkMesh->vertices.push_back(faceIndex);
-        
-        switch (faceIndex){
-            case 0:
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).front.x);
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).front.y); 
-                break;
-            case 1:
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).back.x);
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).back.y); 
-                break;
-            case 2:
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).left.x);
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).left.y); 
-                break;
-            case 3:
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).right.x);
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).right.y); 
-                break;
-            case 4:
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).top.x);
-                chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).top.y);   
-                break;  
-            case 5:
+        if(chunkData[pos.x][pos.y][pos.z].visibility){
+            switch (faceIndex){
+                case 0:
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).front.x);
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).front.y); 
+                    break;
+                case 1:
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).back.x);
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).back.y); 
+                    break;
+                case 2:
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).left.x);
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).left.y); 
+                    break;
+                case 3:
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).right.x);
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).right.y); 
+                    break;
+                case 4:
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).top.x);
+                    chunkMesh->vertices.push_back(blocks->at(chunkData[pos.x][pos.y][pos.z].blockID).top.y);   
+                    break;  
+                case 5:
 
-                break;  
+                    break;  
+            }
+        }
+        else{
+            chunkMesh->vertices.push_back(7);
+            chunkMesh->vertices.push_back(7);
         }
     }
     if(faceIndex % 2 == 0){
@@ -126,7 +169,7 @@ void Chunk::AddFace(u32 faceIndex, glm::vec3 position){
 
 
 bool Chunk::ConstainsBlock(i32 x, i32 y, i32 z){
-    return chunkData[x][y][z].blockID ? true : false;
+    return chunkData[x][y][z].blockID ? 1 : 0;
 }
 bool Chunk::IsWithinChunk(i32 x, i32 y, i32 z){
     if(x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_HEIGHT && z >= 0 && z < CHUNK_SIZE){
@@ -151,18 +194,55 @@ u32 Chunk::GetChunkIndicesSize(){
     return chunkMesh->indices.size();
 }
 
-void Chunk::AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, BlockInstanceData block){
+void Chunk::AddBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight, BlockInstanceData block){
     if(IsWithinChunk(x,y,z) && chunkData[x][y][z].blockID == 0){
         chunkData[x][y][z] = block;
-        CreateChunkMesh(chunks);
+        OrganizeBlock(chunks, x,y,z);
+        if(IsWithinChunk(x+1, y, z)){
+            OrganizeBlock(chunks, x+1,y,z);    
+        }
+        if(IsWithinChunk(x-1, y, z)){
+            OrganizeBlock(chunks, x-1,y,z);    
+        }
+        if(IsWithinChunk(x, y, z+1)){
+            OrganizeBlock(chunks, x,y,z+1);    
+        }
+        if(IsWithinChunk(x, y, z-1)){
+            OrganizeBlock(chunks, x,y,z-1);    
+        }
+        if(IsWithinChunk(x, y-1, z)){
+            OrganizeBlock(chunks, x,y-1,z);    
+        }
+        if(IsWithinChunk(x, y+1, z)){
+            OrganizeBlock(chunks, x,y+1,z);    
+        }
+        CreateChunkMesh(chunks, shelterHeight);
         SendMeshData();
     }
 }
 
-void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z){
+void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight){
     if(IsWithinChunk(x,y,z) && chunkData[x][y][z].blockID > 0){
         chunkData[x][y][z] = {0,0,0,0};
-        CreateChunkMesh(chunks);
+        if(IsWithinChunk(x+1, y, z)){
+            OrganizeBlock(chunks, x+1,y,z);    
+        }
+        if(IsWithinChunk(x-1, y, z)){
+            OrganizeBlock(chunks, x-1,y,z);    
+        }
+        if(IsWithinChunk(x, y, z+1)){
+            OrganizeBlock(chunks, x,y,z+1);    
+        }
+        if(IsWithinChunk(x, y, z-1)){
+            OrganizeBlock(chunks, x,y,z-1);    
+        }
+        if(IsWithinChunk(x, y-1, z)){
+            OrganizeBlock(chunks,x,y-1,z);    
+        }
+        if(IsWithinChunk(x, y+1, z)){
+            OrganizeBlock(chunks,x,y+1,z);    
+        }
+        CreateChunkMesh(chunks, shelterHeight);
         SendMeshData();
     }
 }
@@ -195,7 +275,7 @@ i32 Chunk::GetCoordinateTerrainHeight(i32 x, i32 z){
 }
 
 
-void Chunk::CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z){
+void Chunk::CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight){
     if(chunkData[x][y][z].blockID != 0){
     if(z - 1 < 0){
         if(chunks[0] != nullptr){
@@ -265,12 +345,85 @@ void Chunk::CreateBlock(Chunk** chunks, i32 x, i32 y, i32 z){
     //     AddFace(4, glm::vec3(x,y,z));
     // }
 
-    if(y + 1 >= CHUNK_HEIGHT){
+    if(y + 1 >= CHUNK_HEIGHT || y+1 >= shelterHeight){
         AddFace(4, glm::vec3(x,y,z));
     }
     else if(chunkData[x][y+1][z].blockID == 0){
         AddFace(4, glm::vec3(x,y,z));
     }    
+    }
+}
+
+void Chunk::OrganizeBlock(Chunk** chunks, i32 x, i32 y, i32 z){
+    if(chunkData[x][y][z].blockID != 0){
+        if(z - 1 < 0){
+            if(chunks[0] != nullptr){
+                if(chunks[0]->chunkData[x][y][CHUNK_SIZE-1].blockID == 0){
+                    chunkData[x][y][z].visibility = 1;
+                    return;
+                }    
+            }
+        }
+        else if(chunkData[x][y][z-1].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }   
+        if(z + 1 >= CHUNK_SIZE){
+            if(chunks[1] != nullptr){
+                if(chunks[1]->chunkData[x][y][0].blockID == 0){
+                    chunkData[x][y][z].visibility = 1;
+                    return;
+                }    
+            }
+        }
+        else if(chunkData[x][y][z+1].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }   
+        if(x - 1 < 0){
+            if(chunks[2] != nullptr){
+                if(chunks[2]->chunkData[CHUNK_SIZE-1][y][z].blockID == 0){
+                    chunkData[x][y][z].visibility = 1;
+                    return;
+                }    
+            }
+
+        }
+        else if(chunkData[x-1][y][z].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }   
+        if(x + 1 >= CHUNK_SIZE){
+            if(chunks[3] != nullptr){
+                if(chunks[3]->chunkData[0][y][z].blockID == 0){
+                    chunkData[x][y][z].visibility = 1;
+                    return;
+                }    
+            }
+        }
+        else if(chunkData[x+1][y][z].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }  
+
+        if(y - 1 < 0){
+            
+        }
+        else if(chunkData[x][y-1][z].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }
+
+        if(y + 1 > CHUNK_HEIGHT){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }
+        else if(chunkData[x][y+1][z].blockID == 0){
+            chunkData[x][y][z].visibility = 1;
+            return;
+        }
+
+        chunkData[x][y][z].visibility = 0;            
     }
 }
 

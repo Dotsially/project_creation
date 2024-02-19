@@ -23,7 +23,7 @@ typedef struct BiomeFogData{
 
 typedef struct BiomeData{
     std::string name;
-    std::string type;
+    u8 type;
     u8 height;
     u8 elevation;
     std::vector<BiomeNoiseData> noise;

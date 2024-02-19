@@ -17,5 +17,5 @@ private:
     Mesh mesh;
 public:
     void InitializeMesh(std::map<u32, u8>* itemInstances, std::map<u8, ItemData>* items);
-    void Draw(Camera* camera);
+    void Draw(Camera* camera, i32 instances);
 };

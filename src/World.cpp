@@ -11,7 +11,6 @@ World::World(Camera* camera, Dungeon* dungeon, std::map<u8, BlockData>* blocks, 
 
     biome = biomes.GetBiome(worldData.biome);
     
-    
     std::vector<fnl_state> biomeNoise;
 
     for(int i = 0; i < biome.noise.size(); i++){
@@ -26,10 +25,32 @@ World::World(Camera* camera, Dungeon* dungeon, std::map<u8, BlockData>* blocks, 
         noise.weighted_strength = biome.noise[i].weightedStrength;
         biomeNoise.push_back(noise);
     }
+    
+    switch(biome.type){
+        case 0:
+            for(u32 x = 0; x < REGION_SIZE; x++){
+                for(u32 z = 0; z < REGION_SIZE; z++){
+                    chunks[z+x*REGION_SIZE].CreateChunkDataOverworld(biomeNoise, blocks, blockModels, biome, x,z);
+                
+                }
+            }
+            break;
+        case 1:
+            for(u32 x = 0; x < REGION_SIZE; x++){
+                for(u32 z = 0; z < REGION_SIZE; z++){
+                    chunks[z+x*REGION_SIZE].CreateChunkDataDungeon(dungeon, blocks, blockModels, biome, x,z);
+                
+                }
+            }
+            break;
+    }
+    
 
+    Chunk* neighbors[4];
     for(u32 x = 0; x < REGION_SIZE; x++){
         for(u32 z = 0; z < REGION_SIZE; z++){
-            chunks[z+x*REGION_SIZE].CreateChunkData(dungeon, blocks, blockModels, biome, biomeNoise, x,z);
+            GetNeighbors(neighbors,x,z);
+            chunks[z+x*REGION_SIZE].OrganizeChunk(neighbors);
         }
     }
 
@@ -59,7 +80,7 @@ void World::Update(Camera* camera, glm::vec3 playerPosition){
                         
                         if(chunks[z+x*REGION_SIZE].hasChunkMesh){
                             GetNeighbors(neighbors,x,z);
-                            chunks[z + x * REGION_SIZE].CreateChunkMesh(neighbors);
+                            chunks[z + x * REGION_SIZE].CreateChunkMesh(neighbors, cullHeight);
                         }
                     }
             }
@@ -106,6 +127,15 @@ u8 World::IsWithinWorld(glm::vec3 position){
     return IsWithinWorld(position.x, position.y, position.z);
 }
 
+u8 World::IsWithinCulledWorld(i32 x, i32 y, i32 z){
+    if(x >= 0 && x < CHUNK_SIZE * REGION_SIZE 
+    && y >= 0 && y < cullHeight
+    && z >= 0 && z < CHUNK_SIZE * REGION_SIZE){
+        return true;
+    }
+    return false;
+}
+
 u8 World::ContainsBlock(i32 x, i32 y, i32 z){
     glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
     return chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
@@ -118,7 +148,7 @@ void World::AddBlock(i32 x, i32 y, i32 z, BlockInstanceData block){
         Chunk* neighbors[4];
         GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
         chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-            .AddBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE, block);
+            .AddBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE, cullHeight, block);
     }
 }
 
@@ -127,27 +157,27 @@ void World::RemoveBlock(i32 x, i32 y, i32 z){
     Chunk* neighbors[4];
     GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
     chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE]
-        .RemoveBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE);
+        .RemoveBlock(neighbors, x%CHUNK_SIZE, y, z%CHUNK_SIZE, cullHeight);
 
     Chunk* tempNeighbors[4];
     if(z%32 == 0 && neighbors[0] != nullptr){
         GetNeighbors(tempNeighbors, chunkCoordinate.x, chunkCoordinate.y-1);
-        neighbors[0]->CreateChunkMesh(tempNeighbors);
+        neighbors[0]->CreateChunkMesh(tempNeighbors, cullHeight);
         neighbors[0]->SendMeshData();
     }
     if(z%32 == 31 && neighbors[1] != nullptr){
         GetNeighbors(tempNeighbors, chunkCoordinate.x, chunkCoordinate.y+1);
-        neighbors[1]->CreateChunkMesh(tempNeighbors);
+        neighbors[1]->CreateChunkMesh(tempNeighbors, cullHeight);
         neighbors[1]->SendMeshData();
     }
     if(x%32 == 0 && neighbors[2] != nullptr){
         GetNeighbors(tempNeighbors, chunkCoordinate.x-1, chunkCoordinate.y);
-        neighbors[2]->CreateChunkMesh(tempNeighbors);
+        neighbors[2]->CreateChunkMesh(tempNeighbors, cullHeight);
         neighbors[2]->SendMeshData();
     }
     if(x%32 == 31 && neighbors[3] != nullptr){
         GetNeighbors(tempNeighbors, chunkCoordinate.x+1, chunkCoordinate.y);
-        neighbors[3]->CreateChunkMesh(tempNeighbors);
+        neighbors[3]->CreateChunkMesh(tempNeighbors, cullHeight);
         neighbors[3]->SendMeshData();
     }
 
@@ -193,4 +223,36 @@ glm::vec3 World::GetSkyColor(){
         biome.colors["clear"].skyColor[2]}; 
     
     return skyColor;
+}
+
+
+void World::UpdateChunkMesh(i32 x, i32 z, u8 shelterHeight){
+    cullHeight = shelterHeight;
+    glm::ivec2 chunkCoordinate(x/CHUNK_SIZE, z/CHUNK_SIZE);
+    Chunk* neighbors[4];
+    GetNeighbors(neighbors, chunkCoordinate.x, chunkCoordinate.y);
+    chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE].CreateChunkMesh(neighbors, cullHeight);
+    chunks[chunkCoordinate.y + chunkCoordinate.x*REGION_SIZE].SendMeshData();
+
+    Chunk* tempNeighbors[4];
+    if(neighbors[0] != nullptr){
+        GetNeighbors(tempNeighbors, chunkCoordinate.x, chunkCoordinate.y-1);
+        neighbors[0]->CreateChunkMesh(tempNeighbors, cullHeight);
+        neighbors[0]->SendMeshData();
+    }
+    if(neighbors[1] != nullptr){
+        GetNeighbors(tempNeighbors, chunkCoordinate.x, chunkCoordinate.y+1);
+        neighbors[1]->CreateChunkMesh(tempNeighbors, cullHeight);
+        neighbors[1]->SendMeshData();
+    }
+    if(neighbors[2] != nullptr){
+        GetNeighbors(tempNeighbors, chunkCoordinate.x-1, chunkCoordinate.y);
+        neighbors[2]->CreateChunkMesh(tempNeighbors, cullHeight);
+        neighbors[2]->SendMeshData();
+    }
+    if(neighbors[3] != nullptr){
+        GetNeighbors(tempNeighbors, chunkCoordinate.x+1, chunkCoordinate.y);
+        neighbors[3]->CreateChunkMesh(tempNeighbors, cullHeight);
+        neighbors[3]->SendMeshData();
+    }
 }

@@ -15,8 +15,9 @@ void ItemManager::SetupItems(i32 itemCount, std::vector<Room>* rooms){
         u8 item = rand () % items.size(); 
         u8 success = 0;
         while(!success){
-            u32 x = room.position.x + (rand() % room.width);
-            u32 y = room.position.y + (rand() % room.height);  
+            u32 x = room.position.x + 2 + (rand() % (room.width-2));
+            u32 y = room.position.y + 1 + (rand() % (room.height-2));  
+
             if(!itemInstances.count(y + x*64)){
                 itemInstances[y + x*64] = item;
                 success = 1;
@@ -31,7 +32,7 @@ void ItemManager::CreateItemMesh(){
 }
 
 void ItemManager::DrawItems(Camera* camera){
-    meshes.Draw(camera);
+    meshes.Draw(camera, itemInstances.size());
 }
 
 std::map<u8, ItemData>* ItemManager::GetItems(){

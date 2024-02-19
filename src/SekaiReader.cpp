@@ -56,7 +56,17 @@ BiomeData SekaiReader::ReadBiomeFile(std::string path){
     json jsonData = json::parse(fileStream);
 
     biome.name = jsonData["biome_name"];
-    biome.type = jsonData["biome_type"];
+    
+    if(jsonData["biome_type"] == "overworld"){
+        biome.type = 0;
+    }
+    else if(jsonData["biome_type"] == "dungeon"){
+        biome.type = 1;
+    }
+    else{
+        biome.type = 0;
+    }
+
     biome.height = jsonData["biome_height"];
     biome.elevation = jsonData["biome_elevation"];
 

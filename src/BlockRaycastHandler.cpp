@@ -154,7 +154,7 @@ void BlockRaycastHandler::Raycast(Camera* camera, glm::vec3 rayDirection, World*
             break;
         }
 
-        if(world->IsWithinWorld(block.x, block.y, block.z)){        
+        if(world->IsWithinCulledWorld(block.x, block.y, block.z)){        
             if(world->ContainsBlock(block.x, block.y, block.z)){
                 isSolid = true;
                 

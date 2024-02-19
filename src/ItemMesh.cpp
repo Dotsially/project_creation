@@ -30,7 +30,7 @@ void ItemMesh::InitializeMesh(std::map<u32, u8>* itemInstances, std::map<u8, Ite
     mesh.AddBillboardInstanceData(GL_STATIC_DRAW, instanceData.data(), instanceData.size());
 }
 
-void ItemMesh::Draw(Camera* camera){
+void ItemMesh::Draw(Camera* camera, i32 instances){
     glm::mat4 viewMatrix = camera->GetViewMatrix();
     glm::vec3 cameraRight = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
     glm::vec3 cameraUp = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
@@ -38,5 +38,5 @@ void ItemMesh::Draw(Camera* camera){
     glUniform3fv(3, 1, glm::value_ptr(cameraRight));
     glUniform3fv(4, 1, glm::value_ptr(cameraUp));
     
-    mesh.DrawInstancedBillboard(indices.size());
+    mesh.DrawInstancedBillboard(indices.size(), instances);
 }

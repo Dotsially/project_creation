@@ -138,6 +138,15 @@ void Mesh::AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 vertice
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Mesh::SendBillboardData(i32 drawType, f32* verticesData, i32 verticesDataSize){
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vboInstanced);
+    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);  
+}
+
 void Mesh::DrawMesh(i32 indicesSize, glm::mat4 transform){
     glBindVertexArray(vao);
     glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
@@ -151,8 +160,8 @@ void Mesh::DrawBillboardMesh(i32 indicesSize){
     glBindVertexArray(0);
 }
 
-void Mesh::DrawInstancedBillboard(i32 indicesSize){
+void Mesh::DrawInstancedBillboard(i32 indicesSize, i32 instances){
     glBindVertexArray(vao);
-    glDrawElementsInstanced(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0, 32);
+    glDrawElementsInstanced(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0, instances);
     glBindVertexArray(0);
 }

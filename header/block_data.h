@@ -7,9 +7,9 @@
 
 typedef struct BlockInstanceData{
     u8 blockID;
+    u8 visibility =  0;
     u8 growthStage;
     u8 lookDirection;
-    u8 visibility;
 } BlockInstanceData;
 
 typedef struct BlockData{

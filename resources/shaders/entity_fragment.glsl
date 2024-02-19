@@ -2,17 +2,16 @@
 
 out vec4 fragColor;
 
-in vec2 uv;     
+in vec2 uv;   
+in vec2 texture_info;
 
 uniform sampler2D tex;
-layout (location = 6) uniform int textureIndex;
-layout (location = 7) uniform int flipped;
 
 float textureSizeY = 1.0;
 float textureSizeX = 1.0/5.0;
 
 void main(){
-    vec2 texCoords = vec2(textureSizeX * textureIndex + textureSizeX * fract(flipped*uv.x), 
+    vec2 texCoords = vec2(textureSizeX * texture_info.y + textureSizeX * fract(texture_info.x*uv.x), 
         textureSizeY * 3 + textureSizeY * fract(uv.y));
     vec4 final_color = texture(tex, texCoords);
     

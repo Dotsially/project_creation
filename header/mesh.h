@@ -30,7 +30,7 @@ public:
     void InitializeInstancedMesh(i32 drawType, f32* verticesData, i32 verticesDataSize);
     void AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
     void SendBillboardData(i32 drawType, f32* verticesData, i32 verticesDataSize);
-    void DrawInstancedBillboard(i32 indicesSize);
+    void DrawInstancedBillboard(i32 indicesSize, i32 instances);
     
 
     void InitializeItemMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);

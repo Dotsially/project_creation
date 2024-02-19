@@ -3,6 +3,13 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include "binary_tree.h"
+#include "block_manager.h"
+
+typedef struct DungeonMap{
+    u8 elevation;
+    u8 blockType;
+} DungeonMap;
+
 
 typedef struct Room{
     u32 width;
@@ -14,10 +21,10 @@ typedef struct Room{
 
 class Dungeon{
     std::vector<Room> rooms;
-    u8* dungeonMap;
+    DungeonMap* dungeonMap;
 public:
-    void CreateDungeonFloor();
+    void CreateDungeonFloor(BlockManager* blockManager);
     void DestroyDungeonFloor();
-    u8* GetDungeonMap();
+    DungeonMap* GetDungeonMap();
     std::vector<Room>* GetRooms();
 };

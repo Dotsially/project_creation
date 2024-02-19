@@ -4,6 +4,9 @@
 #include "depedencies.h"
 #include "glad/glad.h"
 #include "SDL2/SDL.h"
+#include "server/server.h"
+#include "client.h"
+#include <thread>
 #include <iostream>
 #include <vector>
 #include "glm/glm.hpp"
@@ -17,10 +20,11 @@
 #include "block_raycast_handler.h"
 #include "world.h"
 #include "camera.h"
-#include "entity.h"
+#include "entity_manager.h"
 #include "item_manager.h"
 #include "entity_mesh.h"
 #include "binary_tree.h"
+#include <cctype>
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -34,6 +38,7 @@ glm::mat4 transform2 = glm::mat4(1.0);
 bool centeredMouse = false;
 
 typedef enum GameState {LOGO = 0, TITLE, SAVES, SERVERS, WORLD_CREATION, GAMEPLAY} GameState;
+
 
 int main(int argc, char* args[]){
     std::vector<f32> vBuffer;
@@ -91,24 +96,42 @@ int main(int argc, char* args[]){
     Shader shaderEntity = Shader("entity_vertex.glsl", "entity_fragment.glsl");
     Shader shaderItem = Shader("item_vertex.glsl", "item_fragment.glsl");
 
+    u8 isHost = 0;
+    char c = 0;
+    std::string ip;
+    std::cout << "(S)erver or (C)lient?" << std::endl;
+    if(std::cin >> c){
+        if(std::tolower(c) == 'c'){
+            std::cout << "Type in the ip: ";
+            std::cin >> ip;
+        }
+        else if(std::tolower(c) == 's'){
+            isHost = 1;
+        }
+    }
+
     while (!gameWindow.WindowShouldClose())
     {
         switch(gameState){
             case TITLE:
+                {
+
+
                 while (gameState == TITLE && !gameWindow.WindowShouldClose())
-                {  
+                { 
                     glClearColor(0.0, 0.0, 0.0, 0.0);
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
                     gameWindow.PollEvents();  
                     
                     const u8* keystate = SDL_GetKeyboardState(NULL);  
-                     
+
                     InputHandler(&gameWindow, keystate);
                     
                     gameWindow.SwapBuffers();              
                 }
 
+                }
                 break;
             case SAVES:
 
@@ -116,20 +139,20 @@ int main(int argc, char* args[]){
             case WORLD_CREATION:
                 
                 break;    
-            case GAMEPLAY:            
+            case GAMEPLAY:  
+                {          
                 Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,0,0));
                 Dungeon dungeon;
-                dungeon.CreateDungeonFloor();
+                dungeon.CreateDungeonFloor(&blockManager);
                 World world(&camera, &dungeon, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
-                itemManager.SetupItems(64, dungeon.GetRooms());
+                EntityManager entityManager;
+                //itemManager.SetupItems(64, dungeon.GetRooms());
                 BlockRaycastHandler blockHandler;
-                Entity player = Entity(glm::vec2(2,8), &world);
-                player.flags.playerControlled = 1;
-                
-                
-                itemManager.CreateItemMesh();
+            
+                //itemManager.CreateItemMesh();
 
-                EntityMesh entityMesh = EntityMesh();
+                EntityMesh entityMesh;
+                entityMesh.InitializeEntityMesh();
                 std::cout << "world created" << std::endl;
 
                 Mesh selectionMesh;
@@ -142,14 +165,38 @@ int main(int argc, char* args[]){
                 double lastTime = SDL_GetTicks64();
                 double frameCounter = 0;
 
+                if(enet_initialize() != 0){
+                    std::cout << "Error initializing enet..." << std::endl;
+                }
+                else{
+                    std::cout << "Enet initialized..." << std::endl; 
+                }
+
+                
+                Server server;
+                Client client;
+                std::thread serverThread;
+
+                if(isHost){
+                    server.InitializeServer();
+                    serverThread = std::thread(&Server::Run, &server); 
+
+                    client.InitializeClient();
+                    client.Connect("localhost", 2001);
+                    client.ReceiveHandshake(&world, &entityManager);
+                }
+                else{
+                    client.InitializeClient();
+                    client.Connect(ip, 2001);
+                    client.ReceiveHandshake(&world, &entityManager);
+                }
+
                 while (gameState == GAMEPLAY && !gameWindow.WindowShouldClose())
                 {
+                    client.Update(&world, &entityManager); 
                     gameWindow.PollEvents();
 
-                    double startTime = SDL_GetTicks64();
-                    double passedTime = startTime - lastTime;
-                    lastTime = startTime;
-                    frameCounter++;
+                    double startTime = 0;
                     
                     const u8* keystate = SDL_GetKeyboardState(NULL);
 
@@ -158,19 +205,20 @@ int main(int argc, char* args[]){
                     //wrong math 
                     //if(passedTime >= 1.0/60.0){
                         //lastTime = startTime;
-                        //frameCounter = 0;
-                        
+                        //frameCounter = 0;  
                         gameWindow.Update(centeredMouse);
                         
-                        camera.Update(keystate, player.GetPosition());
                         blockHandler.Update(&camera, &world, keystate);
-                        player.Update(&camera, &world);
-                        world.Update(&camera, player.GetPosition());
+                        entityManager.Update(&camera, &world, client.GetServer());
+                        camera.Update(keystate, entityManager.GetPlayerPosition());
+                        entityMesh.Update(entityManager.GetEntities());
+                        
+                        world.Update(&camera, entityManager.GetPlayerPosition());
                         transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
                         transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
-                        //entityMesh.Update(glm::vec3(0));
                         view = camera.GetViewMatrix();
                     //}   
+                    
 
                     glm::vec3 skyColor = world.GetSkyColor();
                     glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0);
@@ -182,7 +230,7 @@ int main(int argc, char* args[]){
                     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                     
                     texture.ActivateTexture();
-                    world.Draw(player.GetPosition(), camera.GetPosition());
+                    world.Draw(entityManager.GetPlayerPosition(), camera.GetPosition());
                     
                     if(blockHandler.IsSolid()){
                         shaderBlock.UseProgram();
@@ -194,24 +242,32 @@ int main(int argc, char* args[]){
 
                     glDisable(GL_CULL_FACE);
 
-                    shaderItem.UseProgram();
-                        itemTexture.ActivateTexture();
-                        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
-                        glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                    itemManager.DrawItems(&camera);
+                    // shaderItem.UseProgram();
+                    //     itemTexture.ActivateTexture();
+                    //     glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                    //     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+                    // itemManager.DrawItems(&camera);
 
                     shaderEntity.UseProgram();
                         entityTexture.ActivateTexture();
                         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
                         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                    
-                    entityMesh.Draw(&player, &camera);
+                    entityMesh.Draw(&camera);
 
+                    
                     gameWindow.SwapBuffers();
-                
+
                 }
 
                 dungeon.DestroyDungeonFloor();
+                
+                client.DestroyClient();
+                if(isHost){
+                    server.Stop();
+                    server.DestroyServer();
+                    serverThread.join();
+                }
+                }
 
                 break;
         }

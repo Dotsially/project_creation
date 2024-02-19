@@ -1,0 +1,10 @@
+{
+    "block_name": "wood_plank",
+    "block_model": "cube",
+    "texture_top": "wood_plank.png",
+    "texture_bottom": "wood_plank.png",
+    "texture_left": "wood_plank.png",
+    "texture_right": "wood_plank.png",
+    "texture_front": "wood_plank.png",
+    "texture_back": "wood_plank.png"
+}
