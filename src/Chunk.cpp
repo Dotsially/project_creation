@@ -156,14 +156,14 @@ void Chunk::AddFace(u32 faceIndex, glm::vec3 position){
     }
     if(faceIndex % 2 == 0){
         for(u32 i : VerticesList::indicesCube[0]){
-                chunkMesh->indices.push_back(i + (chunkMesh->indicesCount*4));
+                chunkMesh->indices.push_back(i + (chunkMesh->indicesCount));
         }
     }else{
         for(u32 i : VerticesList::indicesCube[1]){
-                chunkMesh->indices.push_back(i + (chunkMesh->indicesCount*4));
+                chunkMesh->indices.push_back(i + (chunkMesh->indicesCount));
         }
     }
-    chunkMesh->indicesCount++;
+    chunkMesh->indicesCount+=4;
     
 }
 

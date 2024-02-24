@@ -1,0 +1,4 @@
+block tileset: https://opengameart.org/content/16x16-block-texture-set
+character model:
+overworld tileset (grass): https://beast-pixels.itch.io/overworld-tileset-grass-biome
+KL font: https://opengameart.org/content/kl-font

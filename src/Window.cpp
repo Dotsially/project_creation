@@ -45,12 +45,8 @@ Window::Window(int width, int height, std::string title){
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);  
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
     SDL_GL_SetSwapInterval(0);
-    //SDL_SetRelativeMouseMode(SDL_TRUE);
 
     glViewport(0,0,1280,720);
-
-
-    
 }
 
 void Window::Update(bool centeredMouse){
@@ -80,8 +76,8 @@ void Window::SwapBuffers(){
     SDL_GL_SwapWindow(window);
 }
 
-SDL_Event Window::GetEvents(){
-    return e;
+SDL_Event* Window::GetEvent(){
+    return &e;
 }
 
 void Window::Quit(){

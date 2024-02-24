@@ -13,6 +13,7 @@ void EntityMesh::InitializeEntityMesh(){
     }
 
     mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());    
+    mesh.AddAttribute(3, 3, 0);
 }
 
 void EntityMesh::Update(std::map<u32, EntityData>* entities){

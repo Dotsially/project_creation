@@ -8,7 +8,7 @@ void ItemMesh::InitializeMesh(std::map<u32, u8>* itemInstances, std::map<u8, Ite
             vertices.push_back(VerticesList::verticesEntity1x1[i*2]);
             vertices.push_back(VerticesList::verticesEntity1x1[1+i*2]);
             vertices.push_back(0);
-        }
+    }
     
     for(auto item = itemInstances->begin(); item != itemInstances->end(); item++){
         i32 y = item->first % 64;
@@ -27,6 +27,7 @@ void ItemMesh::InitializeMesh(std::map<u32, u8>* itemInstances, std::map<u8, Ite
     }
 
     mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());
+    mesh.AddAttribute(3, 3, 0);
     mesh.AddBillboardInstanceData(GL_STATIC_DRAW, instanceData.data(), instanceData.size());
 }
 

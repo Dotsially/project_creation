@@ -72,67 +72,45 @@ void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize,
     glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), (void*)0);
-    glEnableVertexAttribArray(0);
-
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::InitializeItemMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
-    this->drawType = drawType;
+void Mesh::AddAttribute(i32 dataSize, i32 stride, i32 offset){
     glBindVertexArray(vao);
-    
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
+    glVertexAttribPointer(attributeCount, dataSize, GL_FLOAT, GL_FALSE, stride*sizeof(f32), (void*)(offset*sizeof(f32)));
+    glEnableVertexAttribArray(attributeCount);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)(3*sizeof(f32)));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 6*sizeof(f32), (void*)(5*sizeof(f32)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Mesh::InitializeInstancedMesh(i32 drawType, f32* verticesData, i32 verticesDataSize){
-    this->drawType = drawType;
-    glBindVertexArray(vao);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(f32), (void*)0);
-    glEnableVertexAttribArray(0);   
+    attributeCount++;
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-
 
 void Mesh::AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize){
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vboInstanced);
     glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
     
-    glEnableVertexAttribArray(1);   
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
+    i32 first = attributeCount;
+    i32 second = attributeCount+1;
+    i32 third = attributeCount+2;
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)0);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(3*sizeof(f32)));
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(5*sizeof(f32)));
+    glEnableVertexAttribArray(first);   
+    glEnableVertexAttribArray(second);
+    glEnableVertexAttribArray(third);
+
+    glVertexAttribPointer(first, 3, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)0);
+    glVertexAttribPointer(second, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(3*sizeof(f32)));
+    glVertexAttribPointer(third, 2, GL_FLOAT, GL_FALSE, 7*sizeof(f32), (void*)(5*sizeof(f32)));
     
-    glVertexAttribDivisor(1, 1);
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(first, 1);
+    glVertexAttribDivisor(second, 1);
+    glVertexAttribDivisor(third, 1);
+
+    attributeCount += 3;
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -150,12 +128,6 @@ void Mesh::SendBillboardData(i32 drawType, f32* verticesData, i32 verticesDataSi
 void Mesh::DrawMesh(i32 indicesSize, glm::mat4 transform){
     glBindVertexArray(vao);
     glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
-    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-}
-
-void Mesh::DrawBillboardMesh(i32 indicesSize){
-    glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
