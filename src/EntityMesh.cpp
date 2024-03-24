@@ -31,10 +31,13 @@ void EntityMesh::Update(std::map<u32, EntityData>* entities){
 
     if(!initialized){
         initialized = 1;
-        mesh.AddBillboardInstanceData(GL_DYNAMIC_DRAW, instanceData.data(), instanceData.size());
+        mesh.AddInstanceData(GL_DYNAMIC_DRAW, instanceData.data(), instanceData.size());
+        mesh.AddInstanceAttribute(3, 7, 0);
+        mesh.AddInstanceAttribute(2, 7, 3);
+        mesh.AddInstanceAttribute(2, 7, 5);
     }
     else{
-        mesh.SendBillboardData(GL_DYNAMIC_DRAW, instanceData.data(), instanceData.size());
+        mesh.SendInstanceData(GL_DYNAMIC_DRAW, instanceData.data(), instanceData.size());
     }
 }
 
@@ -46,5 +49,5 @@ void EntityMesh::Draw(Camera* camera){
     glUniform3fv(3, 1, glm::value_ptr(cameraRight));
     glUniform3fv(4, 1, glm::value_ptr(cameraUp));
 
-    mesh.DrawInstancedBillboard(indices.size(), instanceCount);
+    mesh.DrawInstancedMesh(indices.size(), instanceCount);
 }

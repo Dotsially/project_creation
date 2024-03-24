@@ -29,5 +29,5 @@ Done:
 
 
 
-
--- Rework world. Add EntityManager for entity system and Entity for data so world can also access entity data and vise versa. 
+-- Create a biome lookup table based on terrain height, temperature, humidity.
+-- Give biome custom colors to send to the shader (for now)

@@ -2,6 +2,7 @@
 #include "depedencies.h"
 #include "glad/glad.h"
 #include "dynamic_array.h"
+#include "noise_texture.h"
 #include <string>
 
 
@@ -14,6 +15,7 @@ public:
 
     void InitializeTextureFromFile(std::string fileName);
     void InitializeTextureFromAtlas(AtlasArray* textureAtlas);
+    void InitializeNoiseTexture(NoiseTexture* noiseTexture);
 
-    void ActivateTexture();
+    void ActivateTexture(i32 textureUnit);
 };

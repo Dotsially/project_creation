@@ -29,10 +29,12 @@
 #include "binary_tree.h"
 #include <cctype>
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+u32 SCREEN_WIDTH = 1280;
+u32 SCREEN_HEIGHT = 720;
 
 void InputHandler(Window* gameWindow, const u8* keystate); 
+
+void InputHandlerWC(Window* gameWindow, Camera2D* camera, const u8* keystate); 
 
 glm::mat4 view;
 glm::mat4 perspective;
@@ -65,7 +67,7 @@ int main(int argc, char* args[]){
 
 
     Window gameWindow = Window(SCREEN_WIDTH, SCREEN_HEIGHT, "World");
-    GameState gameState = WORLD_CREATION;
+    GameState gameState = GAMEPLAY;
     //opengl stuff
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
@@ -99,28 +101,30 @@ int main(int argc, char* args[]){
     Texture entityTexture;
     entityTexture.InitializeTextureFromFile("player.png");
 
+
     Shader shader = Shader("chunk_vertex.glsl", "chunk_fragment.glsl");
     Shader shaderBlock = Shader("vertex_selection.glsl", "fragment_selection.glsl");
     Shader shaderEntity = Shader("entity_vertex.glsl", "entity_fragment.glsl");
     Shader shaderItem = Shader("item_vertex.glsl", "item_fragment.glsl");
     Shader shaderOverworld = Shader("overworld_vertex.glsl", "overworld_fragment.glsl");
+    Shader shaderOverworldWater = Shader("overworld_water_vertex.glsl", "overworld_water_fragment.glsl");
 
     u8 isHost = 0;
     char c = 0;
     std::string ip;
     
-    if(gameState == GAMEPLAY){
-        std::cout << "(S)erver or (C)lient?" << std::endl;
-        if(std::cin >> c){
-            if(std::tolower(c) == 'c'){
-                std::cout << "Type in the ip: ";
-                std::cin >> ip;
-            }
-            else if(std::tolower(c) == 's'){
-                isHost = 1;
-            }
-        }
-    }
+    // if(gameState == GAMEPLAY){
+    //     std::cout << "(S)erver or (C)lient?" << std::endl;
+    //     if(std::cin >> c){
+    //         if(std::tolower(c) == 'c'){
+    //             std::cout << "Type in the ip: ";
+    //             std::cin >> ip;
+    //         }
+    //         else if(std::tolower(c) == 's'){
+    //             isHost = 1;
+    //         }
+    //     }
+    // }
 
     while (!gameWindow.WindowShouldClose())
     {
@@ -150,42 +154,65 @@ int main(int argc, char* args[]){
                 break;
             case WORLD_CREATION:
                 {
-                    Camera2D camera(glm::vec2{100,100}, glm::vec2{80,45}, 1);
-                    Overworld overworld;
-                    overworld.GenerateOverworld(200,200);        
-                    OverworldMesh overworldMesh;   
-                    overworldMesh.InitializeMesh(&overworldTexturePacker, overworld.GetWorldTiles(), overworld.GetWidth(), overworld.GetHeight());         
-
-                while (gameState == WORLD_CREATION && !gameWindow.WindowShouldClose())
-                { 
-                    glClearColor(0.0, 0.0, 0.0, 0.0);
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-
-                    gameWindow.PollEvents();  
+                    int worldWidth = 290;
+                    int worldHeight = 270;
+                    Texture overworldWaterTexture;
+                    Texture worldMapTexture;
+                    Texture caustic;
+                    Camera2D camera(glm::vec2{worldWidth/2.0,worldHeight/2.0}, glm::vec2{80,45}, 1);
+                    Camera2D viewport(glm::vec2{SCREEN_WIDTH/2.0,SCREEN_HEIGHT/2.0}, glm::vec2{SCREEN_WIDTH,SCREEN_HEIGHT}, 3);
+                    Overworld overworld(worldWidth,worldHeight);
+                    overworld.GenerateOverworld();        
+                    OverworldMesh overworldMesh;
                     
-                    const u8* keystate = SDL_GetKeyboardState(NULL);  
+                    overworldMesh.InitializeMesh(&overworldTexturePacker, overworld.GetWorldTiles(), overworld.GetWidth(), overworld.GetHeight(), SCREEN_WIDTH, SCREEN_HEIGHT);         
+                    overworldWaterTexture.InitializeNoiseTexture(overworld.GetNoiseTexture());
+                    caustic.InitializeTextureFromFile("effects/caustic.png");
+                    Timer timer;
+                    while (gameState == WORLD_CREATION && !gameWindow.WindowShouldClose())
+                    { 
+                        glClearColor(0.0, 0.0, 0.0, 0.0);
+                        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
 
-                    InputHandlerWC(&gameWindow, &camera, keystate);
-                    camera.Update();
+                        gameWindow.PollEvents();  
+                        
+                        const u8* keystate = SDL_GetKeyboardState(NULL);  
 
-                    perspective = camera.GetProjectMatrix();
+                        InputHandlerWC(&gameWindow, &camera, keystate);
+                        camera.Update();
+                        timer.Count();
 
-                    
-                    shaderOverworld.UseProgram();
-                        overworldTexture.ActivateTexture();
-                        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
-                    overworldMesh.Draw();
-                    
-                    gameWindow.SwapBuffers();              
-                }
+                        if(keystate[SDL_SCANCODE_X]){
+                            if(!timer.IsStarted()){
+                                timer.Start(0.016);
+                                overworld.GenerateOverworld();
+                                overworldWaterTexture.InitializeNoiseTexture(overworld.GetNoiseTexture());
+                                overworldMesh.ReloadMesh(&overworldTexturePacker, overworld.GetWorldTiles(), overworld.GetWidth(), overworld.GetHeight());
+                            }
+                        }
 
-                overworld.DestroyOverworld();
+                        perspective = camera.GetProjectMatrix();
+                        glm::mat4 bgPerspective = viewport.GetProjectMatrix();
+                        
+                        shaderOverworld.UseProgram();
+                            overworldTexture.ActivateTexture(GL_TEXTURE0);
+                            glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                        overworldMesh.Draw();
 
+                        shaderOverworldWater.UseProgram();
+                            overworldWaterTexture.ActivateTexture(GL_TEXTURE0);
+                            caustic.ActivateTexture(GL_TEXTURE1);
+                            glUniformMatrix4fv(0,1, false, glm::value_ptr(perspective));
+                            glUniform1f(1, camera.GetZoomLevel());
+                        overworldMesh.DrawWater();
+                        
+                        gameWindow.SwapBuffers();              
+                    }
                 }
                 break;    
             case GAMEPLAY:  
                 {          
-                Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,0,0));
+                Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,0,0));
                 Dungeon dungeon;
                 dungeon.CreateDungeonFloor(&blockManager);
                 World world(&camera, &dungeon, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
@@ -218,27 +245,27 @@ int main(int argc, char* args[]){
                 }
 
                 
-                Server server;
-                Client client;
-                std::thread serverThread;
+                // Server server;
+                // Client client;
+                // std::thread serverThread;
 
-                if(isHost){
-                    server.InitializeServer();
-                    serverThread = std::thread(&Server::Run, &server); 
+                // if(isHost){
+                //     server.InitializeServer();
+                //     serverThread = std::thread(&Server::Run, &server); 
 
-                    client.InitializeClient();
-                    client.Connect("localhost", 2001);
-                    client.ReceiveHandshake(&world, &entityManager);
-                }
-                else{
-                    client.InitializeClient();
-                    client.Connect(ip, 2001);
-                    client.ReceiveHandshake(&world, &entityManager);
-                }
+                //     client.InitializeClient();
+                //     client.Connect("localhost", 2001);
+                //     client.ReceiveHandshake(&world, &entityManager);
+                // }
+                // else{
+                //     client.InitializeClient();
+                //     client.Connect(ip, 2001);
+                //     client.ReceiveHandshake(&world, &entityManager);
+                // }
 
                 while (gameState == GAMEPLAY && !gameWindow.WindowShouldClose())
                 {
-                    client.Update(&world, &entityManager); 
+                    //client.Update(&world, &entityManager); 
                     gameWindow.PollEvents();
 
                     double startTime = 0;
@@ -254,7 +281,7 @@ int main(int argc, char* args[]){
                         gameWindow.Update(centeredMouse);
                         
                         blockHandler.Update(&camera, &world, keystate);
-                        entityManager.Update(&camera, &world, client.GetServer());
+                        //entityManager.Update(&camera, &world, client.GetServer());
                         camera.Update(keystate, entityManager.GetPlayerPosition());
                         entityMesh.Update(entityManager.GetEntities());
                         
@@ -274,15 +301,16 @@ int main(int argc, char* args[]){
                     glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
                     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                     
-                    texture.ActivateTexture();
+                    texture.ActivateTexture(GL_TEXTURE0);
                     world.Draw(entityManager.GetPlayerPosition(), camera.GetPosition());
                     
                     if(blockHandler.IsSolid()){
                         shaderBlock.UseProgram();
-                        texture2.ActivateTexture();
+                        texture2.ActivateTexture(GL_TEXTURE0);
+                        glUniformMatrix4fv(0,1, false, glm::value_ptr(transform2));
                         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
                         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                        selectionMesh.DrawMesh(iBuffer.size(), transform2);
+                        selectionMesh.DrawMesh(iBuffer.size());
                     }
 
                     glDisable(GL_CULL_FACE);
@@ -294,7 +322,7 @@ int main(int argc, char* args[]){
                     // itemManager.DrawItems(&camera);
 
                     shaderEntity.UseProgram();
-                        entityTexture.ActivateTexture();
+                        entityTexture.ActivateTexture(GL_TEXTURE0);
                         glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
                         glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                     entityMesh.Draw(&camera);
@@ -306,12 +334,12 @@ int main(int argc, char* args[]){
 
                 dungeon.DestroyDungeonFloor();
                 
-                client.DestroyClient();
-                if(isHost){
-                    server.Stop();
-                    server.DestroyServer();
-                    serverThread.join();
-                }
+                // client.DestroyClient();
+                // if(isHost){
+                //     server.Stop();
+                //     server.DestroyServer();
+                //     serverThread.join();
+                // }
                 }
 
                 break;
@@ -328,13 +356,12 @@ int main(int argc, char* args[]){
 
 
 void InputHandlerWC(Window* gameWindow, Camera2D* camera, const u8* keystate){
-    SDL_Event* e = gameWindow->GetEvent();
-    if(e->type == SDL_QUIT){
+    SDL_Event e = gameWindow->GetEvent();
+    if(e.type == SDL_QUIT){
         gameWindow->Quit();
     }
-    if(e->type == SDL_MOUSEWHEEL){
-        std::cout << e->wheel.x << " " << e->wheel.y << std::endl;
-        i32 y = e->wheel.y;
+    if(e.type == SDL_MOUSEWHEEL){
+        i32 y = -e.wheel.y;
         camera->UpdateZoom(y);
     }
     if(keystate[SDL_SCANCODE_ESCAPE]){
@@ -346,8 +373,8 @@ void InputHandlerWC(Window* gameWindow, Camera2D* camera, const u8* keystate){
 }
 
 void InputHandler(Window* gameWindow, const u8* keystate){
-    SDL_Event* e = gameWindow->GetEvent();
-    if(e->type == SDL_QUIT){
+    SDL_Event e = gameWindow->GetEvent();
+    if(e.type == SDL_QUIT){
         gameWindow->Quit();
     }
     if(keystate[SDL_SCANCODE_ESCAPE]){

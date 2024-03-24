@@ -27,20 +27,27 @@ void Camera2D::UpdateZoom(i32 y){
     if(zoomLevelIndex < 0){
         zoomLevelIndex = 0;
     }
-    if(zoomLevelIndex > 5){
-        zoomLevelIndex = 5;
+    if(zoomLevelIndex > 9){
+        zoomLevelIndex = 9;
     }
 }
 
 glm::mat4 Camera2D::GetProjectMatrix(){
-    float left = focusPoint.x - size.x/2.0f;
-    float right = focusPoint.x + size.x/2.0f;
-    float top = focusPoint.y - size.y/2.0f;
-    float bottom = focusPoint.y + size.y/2.0f;
+    f32 zoomLevel = zoomLevels[zoomLevelIndex];
+    glm::vec2 finalSize = size * zoomLevel;
+
+    float left = focusPoint.x - finalSize.x/2.0f;
+    float right = focusPoint.x + finalSize.x/2.0f;
+    float top = focusPoint.y - finalSize.y/2.0f;
+    float bottom = focusPoint.y + finalSize.y/2.0f;
 
     glm::mat4 projection = glm::ortho(left, right, bottom, top);
-    f32 zoomLevel = zoomLevels[zoomLevelIndex];
-    glm::mat4 zoom = glm::scale(glm::mat4{}, glm::vec3{zoomLevel, zoomLevel, 1.0});
 
-    return projection * zoom;
+    return projection;
 }
+
+i32 Camera2D::GetZoomLevel(){
+    return zoomLevelIndex;
+}
+
+

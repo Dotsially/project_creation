@@ -18,16 +18,14 @@ public:
     Mesh();
     ~Mesh();
 
-    void InitializeChunkMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void SendChunkData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
-    void DrawChunk(i32 indicesSize, glm::vec3 position, glm::vec3 cameraPosition, glm::vec3 fogColor);
-
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
     void AddAttribute(i32 dataSize, i32 stride, i32 offset);
-    void DrawMesh(i32 indicesSize, glm::mat4 transform);
+    void SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
 
-    //TODO
-    void AddBillboardInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
-    void SendBillboardData(i32 drawType, f32* verticesData, i32 verticesDataSize);
-    void DrawInstancedBillboard(i32 indicesSize, i32 instances);
+    void AddInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
+    void AddInstanceAttribute(i32 dataSize, i32 stride, i32 offset);
+    void SendInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
+
+    void DrawMesh(i32 indicesSize);
+    void DrawInstancedMesh(i32 indicesSize, i32 instances);
 };

@@ -7,9 +7,7 @@ AtlasArray::AtlasArray(){
     array.lastWidth = 0;
     array.usedHeight = 0;
     array.usedWidth  = 0;
-    initialized = 1;
-
-    std::cout << "array" << std::endl;    
+    initialized = 1;   
 }
 
 AtlasArray::~AtlasArray(){

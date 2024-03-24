@@ -19,6 +19,8 @@ class World{
     SekaiReader sekaiReader;
     WorldData worldData;
     ChunkPool chunkPool;
+
+    
 public:
     World(Camera* camera, Dungeon* dungeon, std::map<u8, BlockData>* blocks, std::map<std::string, BlockModelData>* blockModels, Biome biomes);
     ~World();

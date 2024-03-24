@@ -22,5 +22,5 @@ class Window{
     void SwapBuffers();
     void Update(bool centeredMouse);
 
-    SDL_Event* GetEvent();
+    SDL_Event GetEvent();
 };

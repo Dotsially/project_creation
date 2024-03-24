@@ -28,7 +28,10 @@ void ItemMesh::InitializeMesh(std::map<u32, u8>* itemInstances, std::map<u8, Ite
 
     mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());
     mesh.AddAttribute(3, 3, 0);
-    mesh.AddBillboardInstanceData(GL_STATIC_DRAW, instanceData.data(), instanceData.size());
+    mesh.AddInstanceData(GL_STATIC_DRAW, instanceData.data(), instanceData.size());
+    mesh.AddInstanceAttribute(3,7,0);
+    mesh.AddInstanceAttribute(2,7,3);
+    mesh.AddInstanceAttribute(2,7,5);
 }
 
 void ItemMesh::Draw(Camera* camera, i32 instances){
@@ -39,5 +42,5 @@ void ItemMesh::Draw(Camera* camera, i32 instances){
     glUniform3fv(3, 1, glm::value_ptr(cameraRight));
     glUniform3fv(4, 1, glm::value_ptr(cameraUp));
     
-    mesh.DrawInstancedBillboard(indices.size(), instances);
+    mesh.DrawInstancedMesh(indices.size(), instances);
 }

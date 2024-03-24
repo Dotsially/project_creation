@@ -92,7 +92,11 @@ void Chunk::CreateChunkMesh(Chunk** chunks, u8 shelterHeight){
         }
     }
 
-    chunkMesh->mesh.InitializeChunkMesh(GL_DYNAMIC_DRAW, GetChunkMeshData(), GetChunkMeshSize(), GetChunkIndicesData(), GetChunkIndicesSize());
+    chunkMesh->mesh.InitializeMesh(GL_DYNAMIC_DRAW, GetChunkMeshData(), GetChunkMeshSize(), GetChunkIndicesData(), GetChunkIndicesSize());
+    chunkMesh->mesh.AddAttribute(3, 7, 0);
+    chunkMesh->mesh.AddAttribute(1, 7, 3);
+    chunkMesh->mesh.AddAttribute(1, 7, 4);
+    chunkMesh->mesh.AddAttribute(2, 7, 5);
 }
 
 void Chunk::OrganizeChunk(Chunk** chunks){
@@ -249,14 +253,18 @@ void Chunk::RemoveBlock(Chunk** chunks, i32 x, i32 y, i32 z, u8 shelterHeight){
 
 void Chunk::Draw(glm::vec3 cameraPosition, glm::vec3 fogColor){
     if(chunkMesh != nullptr){
-        chunkMesh->mesh.DrawChunk(GetChunkIndicesSize(), glm::vec3(position.x*CHUNK_SIZE, 0.0, position.y*CHUNK_SIZE), cameraPosition, fogColor);
+        glm::mat4 transform = glm::translate(glm::mat4(1), glm::vec3(position.x*CHUNK_SIZE, 0.0, position.y*CHUNK_SIZE));
+        glUniformMatrix4fv(0,1, false, glm::value_ptr(transform));
+        glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
+        glUniform3fv(4, 1, glm::value_ptr(fogColor));
+        chunkMesh->mesh.DrawMesh(GetChunkIndicesSize());
     }
 }
 
 
 void Chunk::SendMeshData(){
     if(chunkMesh != nullptr){
-        chunkMesh->mesh.SendChunkData(GetChunkMeshData(), GetChunkMeshSize(), GetChunkIndicesData(), GetChunkIndicesSize());  
+        chunkMesh->mesh.SendData(GetChunkMeshData(), GetChunkMeshSize(), GetChunkIndicesData(), GetChunkIndicesSize());  
     }
 }
 

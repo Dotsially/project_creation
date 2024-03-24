@@ -1,10 +1,8 @@
 #version 460 core
 
 layout(location = 0) in vec3 vertices;
-layout(location = 1) in vec2 textureInfo;
-layout(location = 2) in float tileType;
 
-layout (location = 1) uniform mat4 projection;
+layout (location = 0) uniform mat4 projection;
 
 const vec2 uv_coords[4] = vec2[4](
     vec2(0, 0), vec2(0, 1),
@@ -16,13 +14,11 @@ const int uv_indices[6] = int[6](
 );
 
 out vec2 uv;
-out vec2 texture_info;
-out float tile_type;
+out vec2 pos;
 
 void main(){
     uv = uv_coords[uv_indices[gl_VertexID%4]];
-    texture_info = textureInfo;
-    tile_type = tileType;
+    pos = vec2(vertices.xy);
     gl_Position = projection * vec4(vertices,1.0);
 }
 

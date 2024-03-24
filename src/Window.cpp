@@ -76,8 +76,8 @@ void Window::SwapBuffers(){
     SDL_GL_SwapWindow(window);
 }
 
-SDL_Event* Window::GetEvent(){
-    return &e;
+SDL_Event Window::GetEvent(){
+    return e;
 }
 
 void Window::Quit(){

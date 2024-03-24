@@ -7,7 +7,6 @@ void TexturePacker::PackTextures(std::string path){
     sekaiReader.ReadTextures(&textureAtlas, &textures, path);
 }
 
-
 AtlasArray* TexturePacker::GetTextureAtlas(){
     return &textureAtlas;
 }
