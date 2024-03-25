@@ -35,7 +35,8 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
     f32* from = model->from;
     f32* to = model->to;
     f32 step = 1.0/16.0;
-
+    
+    //Front
     model->vertices.push_back(from[0]*step);
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(from[2]*step);
@@ -52,6 +53,7 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(from[2]*step);
 
+    //Back
     model->vertices.push_back(from[0]*step);
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(to[2]*step);
@@ -63,11 +65,12 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
     model->vertices.push_back(to[0]*step);
     model->vertices.push_back(to[1]*step);
     model->vertices.push_back(to[2]*step);
-
+    
     model->vertices.push_back(to[0]*step);
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(to[2]*step);
 
+    //Left
     model->vertices.push_back(from[0]*step);
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(to[2]*step);
@@ -84,6 +87,7 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(from[2]*step);
 
+    //Right
     model->vertices.push_back(to[0]*step);
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(to[2]*step);
@@ -100,10 +104,11 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
     model->vertices.push_back(from[1]*step);
     model->vertices.push_back(from[2]*step);
     
+    //Top
     model->vertices.push_back(from[0]*step);
     model->vertices.push_back(to[1]*step);
     model->vertices.push_back(from[2]*step);
-
+    
     model->vertices.push_back(from[0]*step);
     model->vertices.push_back(to[1]*step);
     model->vertices.push_back(to[2]*step);
@@ -114,5 +119,22 @@ void BlockModel::CreateCuboidVertices(BlockModelData* model){
 
     model->vertices.push_back(to[0]*step);
     model->vertices.push_back(to[1]*step);
+    model->vertices.push_back(from[2]*step);
+
+    //Bottom
+    model->vertices.push_back(from[0]*step);
+    model->vertices.push_back(from[1]*step);
+    model->vertices.push_back(from[2]*step);
+
+    model->vertices.push_back(from[0]*step);
+    model->vertices.push_back(from[1]*step);
+    model->vertices.push_back(to[2]*step);
+
+    model->vertices.push_back(to[0]*step);
+    model->vertices.push_back(from[1]*step);
+    model->vertices.push_back(to[2]*step);
+
+    model->vertices.push_back(to[0]*step);
+    model->vertices.push_back(from[1]*step);
     model->vertices.push_back(from[2]*step);
 }

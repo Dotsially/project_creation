@@ -11,10 +11,10 @@ void OverworldMesh::InitializeMesh(TexturePacker* overworldPacker, TileData* wor
         }
     }
 
-    mesh.InitializeMesh(GL_DYNAMIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());
-    mesh.AddAttribute(3, 6, 0);
-    mesh.AddAttribute(2, 6, 3);
-    mesh.AddAttribute(1, 6, 5);
+    mesh.InitializeMesh(GL_DYNAMIC_DRAW, vertices.data(), vertices.size(), sizeof(f32), indices.data(), indices.size());
+    mesh.AddAttribute(GL_FLOAT, sizeof(f32), 3, 6, 0);
+    mesh.AddAttribute(GL_FLOAT, sizeof(f32), 2, 6, 3);
+    mesh.AddAttribute(GL_FLOAT, sizeof(f32), 1, 6, 5);
 
     for(i32 i = 0; i < 4; i++){
         waterVertices[i*3] = VerticesList::verticesItem1x1[i*2] * width;
@@ -28,8 +28,8 @@ void OverworldMesh::InitializeMesh(TexturePacker* overworldPacker, TileData* wor
         count++; 
     }
 
-    waterMesh.InitializeMesh(GL_DYNAMIC_DRAW, waterVertices, 12, waterIndices, 6);
-    waterMesh.AddAttribute(3, 3, 0);
+    waterMesh.InitializeMesh(GL_DYNAMIC_DRAW, waterVertices, sizeof(f32), 12, waterIndices, 6);
+    waterMesh.AddAttribute(GL_FLOAT, sizeof(f32), 3, 3, 0);
 }
 
 void OverworldMesh::ReloadMesh(TexturePacker* overworldPacker, TileData* worldTiles, i32 width, i32 height){
@@ -43,7 +43,7 @@ void OverworldMesh::ReloadMesh(TexturePacker* overworldPacker, TileData* worldTi
         }
     }
     
-    mesh.SendData(vertices.data(), vertices.size(), indices.data(), indices.size());
+    mesh.SendData(vertices.data(), vertices.size(), sizeof(f32), indices.data(), indices.size());
 }
 
 

@@ -16,14 +16,14 @@ Mesh::~Mesh(){
 }
 
 
-void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+void Mesh::InitializeMesh(i32 drawType, void* verticesData, i32 verticesDataSize, i32 vertexSize, u32* indicesData, i32 indicesDataSize){
     this->drawType = drawType;
     glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+    glBufferData(GL_ARRAY_BUFFER, verticesDataSize*vertexSize, verticesData, drawType);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);
 
     glBindVertexArray(0);
@@ -31,11 +31,11 @@ void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::AddAttribute(i32 dataSize, i32 stride, i32 offset){
+void Mesh::AddAttribute(i32 attributeType, i32 attributeSize, i32 dataSize, i32 stride, i32 offset){
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     
-    glVertexAttribPointer(attributeCount, dataSize, GL_FLOAT, GL_FALSE, stride*sizeof(f32), (void*)(offset*sizeof(f32)));
+    glVertexAttribPointer(attributeCount, dataSize, attributeType, GL_FALSE, stride*attributeSize, (void*)(offset*attributeSize));
     glEnableVertexAttribArray(attributeCount);
     attributeCount++;
 
@@ -43,10 +43,23 @@ void Mesh::AddAttribute(i32 dataSize, i32 stride, i32 offset){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+void Mesh::AddIntAttribute(i32 attributeType, i32 attributeSize, i32 dataSize, i32 stride, i32 offset){
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo); 
+    
+    glVertexAttribIPointer(attributeCount, dataSize, attributeType, stride*attributeSize, (void*)(offset*attributeSize));
+    glEnableVertexAttribArray(attributeCount);
+    attributeCount++;
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+void Mesh::SendData(void* verticesData, i32 verticesDataSize, i32 vertexSize, u32* indicesData, i32 indicesDataSize){
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, verticesDataSize*sizeof(f32), verticesData, drawType);
+        glBufferData(GL_ARRAY_BUFFER, verticesDataSize*vertexSize, verticesData, drawType);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize*sizeof(u32), indicesData, drawType);

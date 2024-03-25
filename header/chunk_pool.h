@@ -6,7 +6,7 @@
 
 typedef struct ChunkMesh{
     Mesh mesh;
-    std::vector<f32> vertices;
+    std::vector<ChunkVertex> vertices;
     std::vector<u32> indices;
     u32 indicesCount;
     u8 inUse = 0;

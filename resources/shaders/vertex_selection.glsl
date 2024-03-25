@@ -23,7 +23,6 @@ const int uv_indices[24] = int[24](
 out vec2 uv; 
 
 void main(){
-    
     int uv_index = (gl_VertexID % 4);
 
     uv = uv_coords[uv_indices[uv_index]];

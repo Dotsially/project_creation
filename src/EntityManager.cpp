@@ -81,7 +81,7 @@ void EntityManager::Update(Camera* camera, World* world, ENetPeer* server){
                 u8 tempShelterHeight = entity->second.shelterHeight;
                 entity->second.shelterHeight = CheckSheltered(&entity->second, world);
                 if(entity->second.shelterHeight != tempShelterHeight){
-                    world->UpdateChunkMesh(entity->second.position.x, entity->second.position.z, entity->second.shelterHeight);
+                    
                 }
             }
         }

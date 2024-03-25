@@ -12,8 +12,8 @@ in vec3 world_pos;
 flat in vec2 voxel_id;
 flat in float shading;
 
-float fogEnd = 96;
-float fogStart = 90;
+float fogEnd = 256;
+float fogStart = 128;
 
 float textureSize = 1.0/8.0;
 

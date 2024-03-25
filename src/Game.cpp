@@ -213,9 +213,9 @@ int main(int argc, char* args[]){
             case GAMEPLAY:  
                 {          
                 Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,0,0));
-                Dungeon dungeon;
-                dungeon.CreateDungeonFloor(&blockManager);
-                World world(&camera, &dungeon, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
+                // Dungeon dungeon;
+                // dungeon.CreateDungeonFloor(&blockManager);
+                World world(&camera, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
                 EntityManager entityManager;
                 //itemManager.SetupItems(64, dungeon.GetRooms());
                 BlockRaycastHandler blockHandler;
@@ -228,8 +228,8 @@ int main(int argc, char* args[]){
 
                 Mesh selectionMesh;
                 
-                selectionMesh.InitializeMesh(GL_STATIC_DRAW, vBuffer.data(), vBuffer.size(), iBuffer.data(), iBuffer.size());
-                selectionMesh.AddAttribute(3, 3, 0);
+                selectionMesh.InitializeMesh(GL_STATIC_DRAW, vBuffer.data(), vBuffer.size(), sizeof(f32), iBuffer.data(), iBuffer.size());
+                selectionMesh.AddAttribute(GL_FLOAT, sizeof(f32), 3, 3, 0);
                 perspective = camera.GetProjectMatrix();
                 
                 const double FRAME_TIME = 1.0 / 60.0; // delta time for 60 FPS
@@ -237,12 +237,12 @@ int main(int argc, char* args[]){
                 double lastTime = SDL_GetTicks64();
                 double frameCounter = 0;
 
-                if(enet_initialize() != 0){
-                    std::cout << "Error initializing enet..." << std::endl;
-                }
-                else{
-                    std::cout << "Enet initialized..." << std::endl; 
-                }
+                // if(enet_initialize() != 0){
+                //     std::cout << "Error initializing enet..." << std::endl;
+                // }
+                // else{
+                //     std::cout << "Enet initialized..." << std::endl; 
+                // }
 
                 
                 // Server server;
@@ -283,9 +283,9 @@ int main(int argc, char* args[]){
                         blockHandler.Update(&camera, &world, keystate);
                         //entityManager.Update(&camera, &world, client.GetServer());
                         camera.Update(keystate, entityManager.GetPlayerPosition());
-                        entityMesh.Update(entityManager.GetEntities());
+                        //entityMesh.Update(entityManager.GetEntities());
                         
-                        world.Update(&camera, entityManager.GetPlayerPosition());
+                        world.Update(&camera, camera.GetPosition());
                         transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
                         transform2 = glm::scale(transform2, glm::vec3(1.02f,1.02f,1.02f));
                         view = camera.GetViewMatrix();
@@ -313,7 +313,7 @@ int main(int argc, char* args[]){
                         selectionMesh.DrawMesh(iBuffer.size());
                     }
 
-                    glDisable(GL_CULL_FACE);
+                    //glDisable(GL_CULL_FACE);
 
                     // shaderItem.UseProgram();
                     //     itemTexture.ActivateTexture();
@@ -321,18 +321,18 @@ int main(int argc, char* args[]){
                     //     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                     // itemManager.DrawItems(&camera);
 
-                    shaderEntity.UseProgram();
-                        entityTexture.ActivateTexture(GL_TEXTURE0);
-                        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
-                        glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                    entityMesh.Draw(&camera);
+                    // shaderEntity.UseProgram();
+                    //     entityTexture.ActivateTexture(GL_TEXTURE0);
+                    //     glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                    //     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+                    // entityMesh.Draw(&camera);
 
                     
                     gameWindow.SwapBuffers();
 
                 }
 
-                dungeon.DestroyDungeonFloor();
+                //dungeon.DestroyDungeonFloor();
                 
                 // client.DestroyClient();
                 // if(isHost){

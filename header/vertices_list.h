@@ -5,7 +5,7 @@ class VerticesList{
     
 
     public:
-    static i32 verticesIntCube[6][12];
+    static u8 verticesIntCube[72];
     static f32 verticesCube[6][12];
     static u32 indicesCube[2][6];
     static f32 verticesEntity1x1[8];

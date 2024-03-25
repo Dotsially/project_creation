@@ -12,8 +12,8 @@ void EntityMesh::InitializeEntityMesh(){
         indices.push_back(i);
     }
 
-    mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), indices.data(), indices.size());    
-    mesh.AddAttribute(3, 3, 0);
+    mesh.InitializeMesh(GL_STATIC_DRAW, vertices.data(), vertices.size(), sizeof(f32), indices.data(), indices.size());    
+    mesh.AddAttribute(GL_FLOAT, sizeof(f32), 3, 3, 0);
 }
 
 void EntityMesh::Update(std::map<u32, EntityData>* entities){

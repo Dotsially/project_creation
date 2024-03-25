@@ -16,11 +16,11 @@ typedef struct BlockData{
     std::string blockNameID;
     u8 blockID;
     std::string blockModelID;
-    glm::vec2 top;
-    glm::vec2 bottom;
-    glm::vec2 left;
-    glm::vec2 right;
-    glm::vec2 front;
-    glm::vec2 back;
+    glm::ivec2 top;
+    glm::ivec2 bottom;
+    glm::ivec2 left;
+    glm::ivec2 right;
+    glm::ivec2 front;
+    glm::ivec2 back;
 }BlockData;
 
