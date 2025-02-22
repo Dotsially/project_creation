@@ -30,5 +30,8 @@ Libraries used
 - SDL2
 - FastNoiseLight
 
+Requirements:
+- w64devkit
+
 Textures from
 - https://opengameart.org/content/16x16-block-texture-set
