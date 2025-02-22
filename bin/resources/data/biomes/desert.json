@@ -1,0 +1,27 @@
+{
+    "biome_name" : "desert",
+    "biome_type" : "overworld",
+    "biome_height": 8,
+    "biome_elevation": 2,
+    "biome_layers" : ["sand", "sand", "stone"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.529, 0.8, 0.922],
+            "sky_color" : [0.529, 0.8, 0.922]
+        },
+        "sandstorm" : {
+            "fog_color" : [0.769, 0.529, 0.376],
+            "sky_color" : [0.98, 0.604, 0.369]                  
+        }
+    },
+    "biome_noise" : [{
+        "frequency": 0.01,
+        "octaves" : 0.0,
+        "lacunarity": 0.0,
+        "gain" : 0.0,
+        "weighted_strength" : 0.0,
+        "noise_type" : 0,
+        "noise_fractal_type" : 0,
+        "noise_cellular_return_type": 0
+    }]
+}

@@ -1,0 +1,10 @@
+{
+    "block_name": "stone_brick",
+    "block_model": "cube",
+    "texture_top": "stone_brick.png",
+    "texture_bottom": "stone_brick.png",
+    "texture_left": "stone_brick.png",
+    "texture_right": "stone_brick.png",
+    "texture_front": "stone_brick.png",
+    "texture_back": "stone_brick.png"
+}

@@ -1,0 +1,10 @@
+{
+    "block_name": "snow",
+    "block_model": "cube",
+    "texture_top": "snow_top.png",
+    "texture_bottom": "dirt.png",
+    "texture_left": "snow_side.png",
+    "texture_right": "snow_side.png",
+    "texture_front": "snow_side.png",
+    "texture_back": "snow_side.png"
+}

@@ -1,0 +1,13 @@
+{
+    "biome_name" : "ocean",
+    "biome_type" : "overworld",
+    "biome_height": 0,
+    "biome_elevation": 4,
+    "biome_layers" : ["water", "water", "water"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.529, 0.8, 0.922],
+            "sky_color" : [0.529, 0.8, 0.922]
+        }
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "name" : "war_axe",
+    "texture" : "war_axe.png",
+    "consumable" : 1
+}

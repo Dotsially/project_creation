@@ -1,7 +1,6 @@
 /.vs
 /.vscode
-/bin/*
-/resources/textures
+/bin/world.exe
 build_run_web.bat
 /index.data
 

@@ -1,0 +1,23 @@
+{
+    "biome_name" : "plain_hills",
+    "biome_type" : "overworld",
+    "biome_height": 16,
+    "biome_elevation": 2,
+    "biome_layers" : ["grass", "dirt", "stone"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.529, 0.8, 0.922],
+            "sky_color" : [0.529, 0.8, 0.922]
+        }
+    },
+    "biome_noise" : [{
+        "frequency": 0.01,
+        "octaves" : 3.0,
+        "lacunarity": 2.0,
+        "gain" : 0.5,
+        "weighted_strength" : 0.0,
+        "noise_type" : 0,
+        "noise_fractal_type" : 1,
+        "noise_cellular_return_type": 0
+    }]
+}

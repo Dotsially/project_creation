@@ -1,0 +1,10 @@
+{
+    "block_name": "dirt",
+    "block_model": "cube",
+    "texture_top": "dirt.png",
+    "texture_bottom": "dirt.png",
+    "texture_left": "dirt.png",
+    "texture_right": "dirt.png",
+    "texture_front": "dirt.png",
+    "texture_back": "dirt.png"
+}

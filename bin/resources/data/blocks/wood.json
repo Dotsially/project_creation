@@ -1,0 +1,10 @@
+{
+    "block_name": "wood",
+    "block_model" : "bottom_slab",
+    "texture_top": "wood_log_top.png",
+    "texture_bottom": "wood_log_top.png",
+    "texture_left": "wood_log.png",
+    "texture_right": "wood_log.png",
+    "texture_front": "wood_log.png",
+    "texture_back": "wood_log.png"
+}

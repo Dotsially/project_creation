@@ -1,0 +1,10 @@
+{
+    "block_name": "dungeon_floor",
+    "block_model": "cube",
+    "texture_top": "dungeon_floor.png",
+    "texture_bottom": "dungeon_floor.png",
+    "texture_left": "dungeon_floor.png",
+    "texture_right": "dungeon_floor.png",
+    "texture_front": "dungeon_floor.png",
+    "texture_back": "dungeon_floor.png"
+}

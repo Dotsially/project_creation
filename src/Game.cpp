@@ -113,18 +113,18 @@ int main(int argc, char* args[]){
     char c = 0;
     std::string ip;
     
-    // if(gameState == GAMEPLAY){
-    //     std::cout << "(S)erver or (C)lient?" << std::endl;
-    //     if(std::cin >> c){
-    //         if(std::tolower(c) == 'c'){
-    //             std::cout << "Type in the ip: ";
-    //             std::cin >> ip;
-    //         }
-    //         else if(std::tolower(c) == 's'){
-    //             isHost = 1;
-    //         }
-    //     }
-    // }
+    if(gameState == GAMEPLAY){
+        std::cout << "(S)erver or (C)lient?" << std::endl;
+        if(std::cin >> c){
+            if(std::tolower(c) == 'c'){
+                std::cout << "Type in the ip: ";
+                std::cin >> ip;
+            }
+            else if(std::tolower(c) == 's'){
+                isHost = 1;
+            }
+        }
+    }
 
     while (!gameWindow.WindowShouldClose())
     {
@@ -212,7 +212,7 @@ int main(int argc, char* args[]){
                 break;    
             case GAMEPLAY:  
                 {          
-                Camera camera = Camera(CAMERA_FREECAM, glm::vec3(0,0,0));
+                Camera camera = Camera(CAMERA_THIRDPERSON, glm::vec3(0,0,0));
                 // Dungeon dungeon;
                 // dungeon.CreateDungeonFloor(&blockManager);
                 World world(&camera, blockManager.GetBlocks(), blockModel.GetBlockModels(), biome);
@@ -237,35 +237,35 @@ int main(int argc, char* args[]){
                 double lastTime = SDL_GetTicks64();
                 double frameCounter = 0;
 
-                // if(enet_initialize() != 0){
-                //     std::cout << "Error initializing enet..." << std::endl;
-                // }
-                // else{
-                //     std::cout << "Enet initialized..." << std::endl; 
-                // }
+                if(enet_initialize() != 0){
+                    std::cout << "Error initializing enet..." << std::endl;
+                }
+                else{
+                    std::cout << "Enet initialized..." << std::endl; 
+                }
 
                 
-                // Server server;
-                // Client client;
-                // std::thread serverThread;
+                Server server;
+                Client client;
+                std::thread serverThread;
 
-                // if(isHost){
-                //     server.InitializeServer();
-                //     serverThread = std::thread(&Server::Run, &server); 
+                if(isHost){
+                    server.InitializeServer();
+                    serverThread = std::thread(&Server::Run, &server); 
 
-                //     client.InitializeClient();
-                //     client.Connect("localhost", 2001);
-                //     client.ReceiveHandshake(&world, &entityManager);
-                // }
-                // else{
-                //     client.InitializeClient();
-                //     client.Connect(ip, 2001);
-                //     client.ReceiveHandshake(&world, &entityManager);
-                // }
+                    client.InitializeClient();
+                    client.Connect("localhost", 2001);
+                    client.ReceiveHandshake(&world, &entityManager);
+                }
+                else{
+                    client.InitializeClient();
+                    client.Connect(ip, 2001);
+                    client.ReceiveHandshake(&world, &entityManager);
+                }
 
                 while (gameState == GAMEPLAY && !gameWindow.WindowShouldClose())
                 {
-                    //client.Update(&world, &entityManager); 
+                    client.Update(&world, &entityManager); 
                     gameWindow.PollEvents();
 
                     double startTime = 0;
@@ -281,9 +281,9 @@ int main(int argc, char* args[]){
                         gameWindow.Update(centeredMouse);
                         
                         blockHandler.Update(&camera, &world, keystate);
-                        //entityManager.Update(&camera, &world, client.GetServer());
+                        entityManager.Update(&camera, &world, client.GetServer());
                         camera.Update(keystate, entityManager.GetPlayerPosition());
-                        //entityMesh.Update(entityManager.GetEntities());
+                        entityMesh.Update(entityManager.GetEntities());
                         
                         world.Update(&camera, camera.GetPosition());
                         transform2 = glm::translate(glm::vec3(blockHandler.GetBlock())+0.5f);
@@ -321,11 +321,11 @@ int main(int argc, char* args[]){
                     //     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
                     // itemManager.DrawItems(&camera);
 
-                    // shaderEntity.UseProgram();
-                    //     entityTexture.ActivateTexture(GL_TEXTURE0);
-                    //     glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
-                    //     glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
-                    // entityMesh.Draw(&camera);
+                    shaderEntity.UseProgram();
+                        entityTexture.ActivateTexture(GL_TEXTURE0);
+                        glUniformMatrix4fv(1,1, false, glm::value_ptr(perspective));
+                        glUniformMatrix4fv(2,1, false, glm::value_ptr(view));
+                    entityMesh.Draw(&camera);
 
                     
                     gameWindow.SwapBuffers();

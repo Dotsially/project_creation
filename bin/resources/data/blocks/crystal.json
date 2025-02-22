@@ -1,0 +1,10 @@
+{
+    "block_name": "crystal",
+    "block_model": "cube",
+    "texture_top": "crystal.png",
+    "texture_bottom": "crystal.png",
+    "texture_left": "crystal.png",
+    "texture_right": "crystal.png",
+    "texture_front": "crystal.png",
+    "texture_back": "crystal.png"
+}

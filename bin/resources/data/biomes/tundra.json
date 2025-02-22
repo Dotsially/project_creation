@@ -1,0 +1,35 @@
+{
+    "biome_name" : "tundra",
+    "biome_type" : "overworld",
+    "biome_height": 8,
+    "biome_elevation": 3,
+    "biome_layers" : ["snow", "dirt", "stone"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.529, 0.8, 0.922],   
+            "sky_color" : [0.529, 0.8, 0.922]
+        }
+    },
+    "biome_noise" : [{
+        "frequency": 0.01,
+        "octaves" : 4.0,
+        "lacunarity": 1.5,
+        "gain" : 1.0,
+        "weighted_strength" : 0.0,
+        "noise_type" : 0,
+        "noise_fractal_type" : 1,
+        "noise_cellular_return_type": 0
+        },
+        {
+        "frequency": 0.02,
+        "octaves" : 0.0,
+        "lacunarity": 1.0,
+        "gain" : 0.0,
+        "weighted_strength" : 0.0,
+        "noise_type" : 2,
+        "noise_fractal_type" : 0,
+        "noise_cellular_return_type": 0,
+        "divisor" : 2
+        }
+    ]
+}

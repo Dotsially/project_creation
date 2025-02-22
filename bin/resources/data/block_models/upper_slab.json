@@ -1,0 +1,6 @@
+{
+    "name" : "upper_slab",
+    "type" : "cuboid",
+    "from": [0,8,0],
+    "to": [16,16,16]
+}

@@ -1,0 +1,10 @@
+{
+    "block_name": "water",
+    "block_model": "cube",
+    "texture_top": "water.png",
+    "texture_bottom": "water.png",
+    "texture_left": "water.png",
+    "texture_right": "water.png",
+    "texture_front": "water.png",
+    "texture_back": "water.png"
+}

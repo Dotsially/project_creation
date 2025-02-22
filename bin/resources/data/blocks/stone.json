@@ -1,0 +1,10 @@
+{
+    "block_name": "stone",
+    "block_model": "cube",
+    "texture_top": "stone.png",
+    "texture_bottom": "stone.png",
+    "texture_left": "stone.png",
+    "texture_right": "stone.png",
+    "texture_front": "stone.png",
+    "texture_back": "stone.png"
+}

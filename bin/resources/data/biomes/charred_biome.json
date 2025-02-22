@@ -1,0 +1,23 @@
+{
+    "biome_name" : "charred_biome",
+    "biome_type" : "overworld",
+    "biome_height": 4,
+    "biome_elevation": 2,
+    "biome_layers" : ["charred_earth", "charred_stone", "chared_stone"],
+    "biome_fog" : {
+        "clear" : {
+            "fog_color" : [0.3, 0.1, 0.1],
+            "sky_color" : [0.4, 0.1, 0.1]
+        }
+    },
+    "biome_noise" : [{
+        "frequency": 0.1,
+        "octaves" : 2.0,
+        "lacunarity": 1.5,
+        "gain" : 0.0,
+        "weighted_strength" : 0.0,
+        "noise_type" : 2,
+        "noise_fractal_type" : 0,
+        "noise_cellular_return_type": 0
+    }]
+}
