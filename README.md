@@ -1,6 +1,7 @@
 # Creation: Voxel Engine
+
 <p align="center">
- <img width="600" height="253" src="https://github.com/Dotsially/creation/assets/60740181/947df791-2c13-436a-8b52-e0b850f9a162">
+ <img src ="https://github.com/user-attachments/assets/588bdab1-290c-4679-a7ce-f0068c76dc9c">
 </p>
 
 Unfinished c++ voxel engine that I wanted to make a game with. The codebase became a slog to work with which demotivated me to continue. 
