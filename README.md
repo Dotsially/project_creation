@@ -22,6 +22,7 @@ Features
 - BSP Dungeon generation with item spawning.
 - 2D world generator with lattitude based biomes.
 - Simple grid based physics.
+- Distance based fog.
 - Runs smoothly on a i5 7th gen intel cpu and intergrated graphics.
 
 Libraries used
